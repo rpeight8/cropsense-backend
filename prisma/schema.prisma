@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String?  @db.VarChar(255)
+  password      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  createdFields Field[]  @relation("createdBy")
+  updatedFields Field[]  @relation("updatedBy")
+  createdCrops  Crop[]   @relation("createdBy")
+  updatedCrops  Crop[]   @relation("updatedBy")
+}
+
+enum GEOMETRY_TYPE {
+  POLYGON
+  MULTIPOLYGON
+}
+
+model Field {
+  id           String        @id @default(uuid())
+  name         String        @db.VarChar(255)
+  geometryType GEOMETRY_TYPE @default(POLYGON)
+  coordinates  Json[]
+  cropId       String?
+  crop         Crop?         @relation(fields: [cropId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  createdById  String
+  createdBy    User?         @relation("createdBy", fields: [createdById], references: [id])
+  updatedById  String
+  updatedBy    User?         @relation("updatedBy", fields: [updatedById], references: [id])
+}
+
+model Crop {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  createdById String
+  createdBy   User?    @relation("createdBy", fields: [createdById], references: [id])
+  updatedById String
+  updatedBy   User?    @relation("updatedBy", fields: [updatedById], references: [id])
+  fields      Field[]
+}
