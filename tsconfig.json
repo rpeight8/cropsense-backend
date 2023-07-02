@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     "sourceMap": true,
     "outDir": "./dist",
-    "strict": true,
+    "strict": false,
     "lib": ["esnext"],
     "esModuleInterop": true
   }
