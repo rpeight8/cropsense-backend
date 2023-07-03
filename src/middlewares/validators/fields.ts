@@ -27,7 +27,11 @@ export const CreateFieldSchema = z.object({
     type: GeometryTypeEnum,
     coordinates: FieldCoordinatesSchema,
   }),
-  cropId: z.string().optional(),
+  crop: z
+    .object({
+      id: z.string(),
+    })
+    .optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
@@ -40,7 +44,7 @@ export const WithIdSchema = z.object({
 
 export const UpdateFieldParametersSchema = WithIdSchema;
 export const GetFieldParametersSchema = WithIdSchema;
-export const DeleteFieldParametersSchema = WithIdSchema;
+export const deleteFieldParametersSchema = WithIdSchema;
 
 export const validateCreateField = async (
   req: Request,
@@ -97,7 +101,7 @@ export const validateDeleteField = async (
   next: NextFunction
 ) => {
   try {
-    await DeleteFieldParametersSchema.parseAsync(req.params);
+    await deleteFieldParametersSchema.parseAsync(req.params);
     next();
     console.log("validateDeleteField: success");
   } catch (err) {

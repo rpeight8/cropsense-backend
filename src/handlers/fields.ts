@@ -4,7 +4,7 @@ import prisma from "../modules/db";
 import { TypeOf } from "zod";
 import {
   CreateFieldSchema,
-  DeleteFieldParametersSchema,
+  deleteFieldParametersSchema,
   GetFieldParametersSchema,
   UpdateFieldParametersSchema,
   UpdateFieldSchema,
@@ -24,7 +24,7 @@ interface UpdateFieldRequest extends ProtectedRequest {
   body: TypeOf<typeof UpdateFieldSchema>;
 }
 interface DeleteFieldRequest extends ProtectedRequest {
-  params: TypeOf<typeof DeleteFieldParametersSchema>;
+  params: TypeOf<typeof deleteFieldParametersSchema>;
 }
 
 const prepareFieldForResponse = (field: Field & { crop: Crop | null }) => {
@@ -116,10 +116,10 @@ export const createField = async (
         name: field.name,
         geometryType: field.geometry.type,
         coordinates: field.geometry.coordinates,
-        crop: field.cropId
+        crop: field.crop?.id
           ? {
               connect: {
-                id: field.cropId,
+                id: field.crop.id,
               },
             }
           : undefined,
@@ -179,10 +179,10 @@ export const updateField = async (
         name: field.name,
         geometryType: field.geometry.type,
         coordinates: field.geometry.coordinates,
-        crop: field.cropId
+        crop: field.crop?.id
           ? {
               connect: {
-                id: field.cropId,
+                id: field.crop.id,
               },
             }
           : undefined,
