@@ -24,14 +24,14 @@ model User {
 }
 
 enum GEOMETRY_TYPE {
-  POLYGON
-  MULTIPOLYGON
+  Polygon
+  MultyPolygon
 }
 
 model Field {
   id           String        @id @default(uuid())
   name         String        @db.VarChar(255)
-  geometryType GEOMETRY_TYPE @default(POLYGON)
+  geometryType GEOMETRY_TYPE @default(Polygon)
   coordinates  Json[]
   cropId       String?
   crop         Crop?         @relation(fields: [cropId], references: [id])

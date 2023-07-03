@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-import { Request, Response, NextFunction } from "express";
-
 import { UserFromToken } from "../types";
 
 export const comparePassword = (password: string, hashedPassword: string) => {

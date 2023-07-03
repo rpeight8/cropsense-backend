@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
-const GeometryTypeEnum = z.enum(["POLYGON", "MULTIPOLYGON"]);
+const GeometryTypeEnum = z.enum(["Polygon", "MultyPolygon"]);
 
 const MIN_LATITUDE = -90;
 const MAX_LATITUDE = 90;
