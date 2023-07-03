@@ -3,28 +3,28 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../modules/db";
 import { TypeOf } from "zod";
 import {
-  createFieldSchema,
-  deleteFieldParametersSchema,
-  getFieldParametersSchema,
-  updateFieldParametersSchema,
-  updateFieldSchema,
+  CreateFieldSchema,
+  DeleteFieldParametersSchema,
+  GetFieldParametersSchema,
+  UpdateFieldParametersSchema,
+  UpdateFieldSchema,
 } from "../middlewares/validators/fields";
 import { ProtectedRequest } from "../middlewares/protect";
 import type { Field, Crop } from "@prisma/client";
 
 interface CreateFieldRequest extends ProtectedRequest {
-  body: TypeOf<typeof createFieldSchema>;
+  body: TypeOf<typeof CreateFieldSchema>;
 }
 interface GetFieldsRequest extends ProtectedRequest {}
 interface GetFieldRequest extends ProtectedRequest {
-  params: TypeOf<typeof getFieldParametersSchema>;
+  params: TypeOf<typeof GetFieldParametersSchema>;
 }
 interface UpdateFieldRequest extends ProtectedRequest {
-  params: TypeOf<typeof updateFieldParametersSchema>;
-  body: TypeOf<typeof updateFieldSchema>;
+  params: TypeOf<typeof UpdateFieldParametersSchema>;
+  body: TypeOf<typeof UpdateFieldSchema>;
 }
 interface DeleteFieldRequest extends ProtectedRequest {
-  params: TypeOf<typeof deleteFieldParametersSchema>;
+  params: TypeOf<typeof DeleteFieldParametersSchema>;
 }
 
 const prepareFieldForResponse = (field: Field & { crop: Crop | null }) => {

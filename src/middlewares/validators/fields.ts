@@ -21,7 +21,7 @@ export const FieldCoordinatesSchema = z.tuple([
   FieldHoleSchema,
 ]);
 
-export const createFieldSchema = z.object({
+export const CreateFieldSchema = z.object({
   name: z.string(),
   geometry: z.object({
     type: GeometryTypeEnum,
@@ -31,16 +31,16 @@ export const createFieldSchema = z.object({
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
-export const createFieldsSchema = z.array(createFieldSchema);
-export const updateFieldSchema = createFieldSchema;
+export const CreateFieldsSchema = z.array(CreateFieldSchema);
+export const UpdateFieldSchema = CreateFieldSchema;
 
-export const withIdSchema = z.object({
+export const WithIdSchema = z.object({
   id: z.string(),
 });
 
-export const updateFieldParametersSchema = withIdSchema;
-export const getFieldParametersSchema = withIdSchema;
-export const deleteFieldParametersSchema = withIdSchema;
+export const UpdateFieldParametersSchema = WithIdSchema;
+export const GetFieldParametersSchema = WithIdSchema;
+export const DeleteFieldParametersSchema = WithIdSchema;
 
 export const validateCreateField = async (
   req: Request,
@@ -48,7 +48,7 @@ export const validateCreateField = async (
   next: NextFunction
 ) => {
   try {
-    await createFieldSchema.parseAsync(req.body);
+    await CreateFieldSchema.parseAsync(req.body);
     next();
     console.log("validateCreateField: success");
   } catch (error) {
@@ -64,7 +64,7 @@ export const validateGetField = async (
   next: NextFunction
 ) => {
   try {
-    await getFieldParametersSchema.parseAsync(req.params);
+    await GetFieldParametersSchema.parseAsync(req.params);
     next();
     console.log("validateGetField: success");
   } catch (err) {
@@ -80,8 +80,8 @@ export const validateUpdateField = async (
   next: NextFunction
 ) => {
   try {
-    await updateFieldSchema.parseAsync(req.body);
-    await updateFieldParametersSchema.parseAsync(req.params);
+    await UpdateFieldSchema.parseAsync(req.body);
+    await UpdateFieldParametersSchema.parseAsync(req.params);
     next();
     console.log("validateUpdateField: success");
   } catch (err) {
@@ -97,7 +97,7 @@ export const validateDeleteField = async (
   next: NextFunction
 ) => {
   try {
-    await deleteFieldParametersSchema.parseAsync(req.params);
+    await DeleteFieldParametersSchema.parseAsync(req.params);
     next();
     console.log("validateDeleteField: success");
   } catch (err) {
