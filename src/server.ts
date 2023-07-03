@@ -3,6 +3,7 @@ import router from "./router";
 import cors from "cors";
 import logger from "./middlewares/logger";
 import cookieParser from "cookie-parser";
+import errorHandler from "./middlewares/errorHandler";
 
 const environment = process.env.NODE_ENV || "development";
 
@@ -20,5 +21,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(router);
+app.use(errorHandler);
 
 export default app;

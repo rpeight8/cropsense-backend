@@ -16,7 +16,7 @@ export const signin = async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    return res.status(401).json({ message: "User not found" });
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
   const isMatch = await comparePassword(password, user.password);

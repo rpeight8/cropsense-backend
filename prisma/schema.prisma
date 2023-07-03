@@ -39,7 +39,7 @@ model Field {
   updatedAt    DateTime      @default(now())
   createdById  String
   createdBy    User?         @relation("createdBy", fields: [createdById], references: [id])
-  updatedById  String
+  updatedById  String?
   updatedBy    User?         @relation("updatedBy", fields: [updatedById], references: [id])
 }
 

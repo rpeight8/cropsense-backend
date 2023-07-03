@@ -3,7 +3,7 @@
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "sourceMap": true,
     "outDir": "./dist",
-    "strict": false,
+    "strict": true,
     "lib": ["esnext"],
     "esModuleInterop": true
   }

@@ -1,15 +1,18 @@
 import { Router } from "express";
+import {
+  validateCreateField,
+  validateGetField,
+} from "../middlewares/validators/fields";
+import { createField, getField, getFields } from "../handlers/fields";
+import { protect } from "../middlewares/protect";
 
 const router = Router();
 
-router.get("/fields", (req, res) => {
-  res.json({ message: "Hello, world!" });
-  res.end();
-});
+router.get("/fields", protect, getFields);
 
-router.get("/fields/:id", (req, res) => {});
+router.get("/fields/:id", protect, validateGetField, getField);
 
-router.post("/fields", (req, res) => {});
+router.post("/fields", protect, validateCreateField, createField);
 
 router.put("/fields/:id", (req, res) => {});
 
