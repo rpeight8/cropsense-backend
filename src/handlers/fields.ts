@@ -105,12 +105,10 @@ export const createField = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("createField: start");
   try {
     const user = req.user;
     const field = req.body;
 
-    console.log(user.id);
     const createdField = await prisma.field.create({
       data: {
         name: field.name,
@@ -134,9 +132,13 @@ export const createField = async (
           },
         },
       },
+      include: {
+        crop: true,
+      },
     });
 
-    res.json(createdField);
+    const preparedField = prepareFieldForResponse(createdField);
+    res.json(preparedField);
     console.log("createField: end");
     res.end();
     console.log("createField: after res.end()");
@@ -193,9 +195,12 @@ export const updateField = async (
           },
         },
       },
+      include: {
+        crop: true,
+      },
     });
-    console.log(updatedField);
-    res.json(updatedField);
+    const preparedField = prepareFieldForResponse(updatedField);
+    res.json(preparedField);
     res.end();
   } catch (err) {
     next(err);
