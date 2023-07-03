@@ -31,12 +31,16 @@ export const createFieldSchema = z.object({
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
+export const createFieldsSchema = z.array(createFieldSchema);
+export const updateFieldSchema = createFieldSchema;
 
-export const getFieldParametersSchema = z.object({
+export const withIdSchema = z.object({
   id: z.string(),
 });
 
-export const createFieldsSchema = z.array(createFieldSchema);
+export const updateFieldParametersSchema = withIdSchema;
+export const getFieldParametersSchema = withIdSchema;
+export const deleteFieldParametersSchema = withIdSchema;
 
 export const validateCreateField = async (
   req: Request,
@@ -67,5 +71,38 @@ export const validateGetField = async (
     res.status(400);
     next(err);
     console.log("validateGetField: error");
+  }
+};
+
+export const validateUpdateField = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await updateFieldSchema.parseAsync(req.body);
+    await updateFieldParametersSchema.parseAsync(req.params);
+    next();
+    console.log("validateUpdateField: success");
+  } catch (err) {
+    res.status(400);
+    next(err);
+    console.log("validateUpdateField: error");
+  }
+};
+
+export const validateDeleteField = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await deleteFieldParametersSchema.parseAsync(req.params);
+    next();
+    console.log("validateDeleteField: success");
+  } catch (err) {
+    res.status(400);
+    next(err);
+    console.log("validateDeleteField: error");
   }
 };

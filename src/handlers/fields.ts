@@ -4,7 +4,10 @@ import prisma from "../modules/db";
 import { TypeOf } from "zod";
 import {
   createFieldSchema,
+  deleteFieldParametersSchema,
   getFieldParametersSchema,
+  updateFieldParametersSchema,
+  updateFieldSchema,
 } from "../middlewares/validators/fields";
 import { ProtectedRequest } from "../middlewares/protect";
 import type { Field, Crop } from "@prisma/client";
@@ -15,6 +18,13 @@ interface CreateFieldRequest extends ProtectedRequest {
 interface GetFieldsRequest extends ProtectedRequest {}
 interface GetFieldRequest extends ProtectedRequest {
   params: TypeOf<typeof getFieldParametersSchema>;
+}
+interface UpdateFieldRequest extends ProtectedRequest {
+  params: TypeOf<typeof updateFieldParametersSchema>;
+  body: TypeOf<typeof updateFieldSchema>;
+}
+interface DeleteFieldRequest extends ProtectedRequest {
+  params: TypeOf<typeof deleteFieldParametersSchema>;
 }
 
 const prepareFieldForResponse = (field: Field & { crop: Crop | null }) => {
@@ -78,7 +88,7 @@ export const getField = async (
     }
 
     if (field.createdById !== user.id) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     const preparedField = prepareFieldForResponse(field);
@@ -134,5 +144,96 @@ export const createField = async (
     console.log("createField: error");
     next(err);
     console.log("createField: after next(err)");
+  }
+};
+
+export const updateField = async (
+  req: UpdateFieldRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    const field = req.body;
+    const { id } = req.params;
+
+    const existingField = await prisma.field.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingField) {
+      return res.status(404).json({ error: "Field not found" });
+    }
+
+    if (existingField.createdById !== user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const updatedField = await prisma.field.update({
+      where: {
+        id,
+      },
+      data: {
+        name: field.name,
+        geometryType: field.geometry.type,
+        coordinates: field.geometry.coordinates,
+        crop: field.cropId
+          ? {
+              connect: {
+                id: field.cropId,
+              },
+            }
+          : undefined,
+        updatedAt: new Date(),
+        updatedBy: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+    console.log(updatedField);
+    res.json(updatedField);
+    res.end();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteField = async (
+  req: DeleteFieldRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const existingField = await prisma.field.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingField) {
+      return res.status(404).json({ error: "Field not found" });
+    }
+
+    if (existingField.createdById !== user.id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const deletedField = await prisma.field.delete({
+      where: {
+        id,
+      },
+    });
+
+    res.json(deletedField);
+    res.end();
+  } catch (err) {
+    next(err);
   }
 };
