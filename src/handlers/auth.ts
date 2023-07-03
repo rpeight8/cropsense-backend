@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import prisma from "../modules/db";
 import { comparePassword, generateToken } from "../modules/auth";
+import { createUser } from "./user";
 
 export const signin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -38,6 +39,10 @@ export const signin = async (req: Request, res: Response) => {
 
   res.json({ message: "Login successful" });
   res.end();
+};
+
+export const signup = async (req: Request, res: Response) => {
+  createUser(req, res);
 };
 
 export const signout = async (req: Request, res: Response) => {
