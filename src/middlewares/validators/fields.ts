@@ -31,7 +31,7 @@ export const CreateFieldSchema = z.object({
     .object({
       id: z.string(),
     })
-    .optional(),
+    .nullable(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });

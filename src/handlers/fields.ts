@@ -172,7 +172,7 @@ export const updateField = async (
     if (existingField.createdById !== user.id) {
       return res.status(403).json({ error: "Unauthorized" });
     }
-
+    
     const updatedField = await prisma.field.update({
       where: {
         id,
@@ -187,7 +187,9 @@ export const updateField = async (
                 id: field.crop.id,
               },
             }
-          : undefined,
+          : {
+              disconnect: true,
+            },
         updatedAt: new Date(),
         updatedBy: {
           connect: {
