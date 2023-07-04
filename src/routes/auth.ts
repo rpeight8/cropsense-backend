@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { signin, signout, signup } from "../handlers/auth";
+import { signin, signout, signup, verify } from "../handlers/auth";
 
 const router = Router();
-
+router.post("/verify", verify);
 router.post("/signin", signin);
 router.post("/signup", signup);
 router.post("/signout", signout);

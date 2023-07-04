@@ -1,7 +1,27 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../modules/db";
-import { comparePassword, generateToken } from "../modules/auth";
+import { comparePassword, generateToken, verifyToken } from "../modules/auth";
 import { createUser } from "./user";
+
+export const verify = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let token = req.cookies?.token;
+  
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = verifyToken(token);
+    res.status(200).json(decoded);
+  } catch (err) {
+    res.status(401).json({ message: "Unauthorized" });
+    next(err);
+  }
+};
 
 export const signin = async (req: Request, res: Response) => {
   const { email, password } = req.body;
