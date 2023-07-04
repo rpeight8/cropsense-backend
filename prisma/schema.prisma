@@ -41,6 +41,7 @@ model Field {
   createdBy    User?         @relation("createdBy", fields: [createdById], references: [id])
   updatedById  String?
   updatedBy    User?         @relation("updatedBy", fields: [updatedById], references: [id])
+  NDVI         NDVI[]
 }
 
 model Crop {
@@ -54,4 +55,14 @@ model Crop {
   updatedById String?
   updatedBy   User?    @relation("updatedBy", fields: [updatedById], references: [id])
   fields      Field[]
+}
+
+model NDVI {
+  id        String   @id @default(uuid())
+  date      DateTime
+  fieldId   String
+  field     Field    @relation(fields: [fieldId], references: [id])
+  picture  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
