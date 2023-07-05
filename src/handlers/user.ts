@@ -22,19 +22,29 @@ export const getUser = async (req: Request, res: Response) => {
 export const createUser = async (req: Request, res: Response) => {
   const { email, name, password } = req.body;
 
-  if (!email || !name || !password) {
+  if (!email || !password) {
     return res.status(400).json({ message: "Missing fields" });
+  }
+
+  const exisitingUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (exisitingUser) {
+    return res.status(409).json({ message: "The email is already taken" });
   }
 
   try {
     await prisma.user.create({
       data: {
         email,
-        name,
+        name: name || "",
         password: await hashPassword(password),
       },
     });
-    res.json();
+    res.status(201).json({ message: "User created" });
     res.end();
   } catch (err) {
     res.status(400).json({ message: "Email already exists" });

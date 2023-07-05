@@ -12,7 +12,12 @@ console.log(process.env.NODE_ENV);
 const app = express();
 
 if (environment === "development") {
-  app.use(cors());
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+      credentials: true,
+    })
+  );
 }
 
 app.use(logger);

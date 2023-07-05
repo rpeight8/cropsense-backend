@@ -61,6 +61,5 @@ export const getNDVI = async (
   } catch (err) {
     res.status(500);
     next(err);
-    console.log("getNDVI: error");
   }
 };

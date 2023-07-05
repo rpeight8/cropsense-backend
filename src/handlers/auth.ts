@@ -9,7 +9,7 @@ export const verify = async (
   next: NextFunction
 ) => {
   let token = req.cookies?.token;
-  
+
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -46,18 +46,22 @@ export const signin = async (req: Request, res: Response) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
-  const token = generateToken({
+  const publicUser = {
     id: user.id,
     email: user.email,
     name: user.name,
-  });
+  };
+
+  const token = generateToken(publicUser);
 
   res.cookie("token", token, {
-    httpOnly: true,
+    // httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "development" ? false : true,
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  res.json({ message: "Login successful" });
+  res.json(publicUser);
   res.end();
 };
 
