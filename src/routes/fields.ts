@@ -11,19 +11,31 @@ import {
   getField,
   getFields,
   updateField,
-} from "../handlers/fields";
+} from "../controllers/fields";
 import { protect } from "../middlewares/protect";
 
 const router = Router();
 
-router.get("/fields", protect, getFields);
+router.get("/fields/:seasonId", protect, getFields);
 
-router.get("/fields/:id", protect, validateGetField, getField);
+router.get("/fields/:seasonId", protect, getField);
 
-router.post("/fields", protect, validateCreateField, createField);
+router.get("/fields/:seasonId/:fieldId", protect, validateGetField, getField);
 
-router.put("/fields/:id", protect, validateUpdateField, updateField);
+router.post("/fields/:seasonId/", protect, validateCreateField, createField);
 
-router.delete("/fields/:id", protect, validateDeleteField, deleteField);
+router.put(
+  "/fields/:seasonId/:fieldId",
+  protect,
+  validateUpdateField,
+  updateField
+);
+
+router.delete(
+  "/fields/:seasonId/:fieldId",
+  protect,
+  validateDeleteField,
+  deleteField
+);
 
 export default router;

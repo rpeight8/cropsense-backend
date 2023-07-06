@@ -6,7 +6,7 @@ import {
   getCrop,
   getCrops,
   updateCrop,
-} from "../handlers/crops";
+} from "../controllers/crops";
 
 const router = Router();
 

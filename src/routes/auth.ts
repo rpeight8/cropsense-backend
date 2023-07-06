@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signin, signout, signup, verify } from "../handlers/auth";
+import { signin, signout, signup, verify } from "../controllers/auth";
 
 const router = Router();
 router.post("/verify", verify);

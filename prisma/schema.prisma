@@ -11,16 +11,33 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  name          String   @db.VarChar(255)
-  password      String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now())
-  createdFields Field[]  @relation("createdBy")
-  updatedFields Field[]  @relation("updatedBy")
-  createdCrops  Crop[]   @relation("createdBy")
-  updatedCrops  Crop[]   @relation("updatedBy")
+  id               String      @id @default(uuid())
+  email            String      @unique
+  name             String      @db.VarChar(255)
+  password         String
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @default(now())
+  createdFields    Field[]     @relation("createdBy")
+  updatedFields    Field[]     @relation("updatedBy")
+  createdCrops     Crop[]      @relation("createdBy")
+  updatedCrops     Crop[]      @relation("updatedBy")
+  createdSeason    Season[]    @relation("createdBy")
+  createdFieldCrop FieldCrop[] @relation("createdBy")
+  updatedFieldCrop FieldCrop[] @relation("updatedBy")
+}
+
+model Season {
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(255)
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
+  FieldCrop   FieldCrop[]
+  createdById String?
+  createdBy   User?       @relation("createdBy", fields: [createdById], references: [id])
+  Crop        Crop?       @relation(fields: [cropId], references: [id])
+  cropId      String?
 }
 
 enum GEOMETRY_TYPE {
@@ -33,8 +50,6 @@ model Field {
   name         String        @db.VarChar(255)
   geometryType GEOMETRY_TYPE @default(Polygon)
   coordinates  Json[]
-  cropId       String?
-  crop         Crop?         @relation(fields: [cropId], references: [id])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now())
   createdById  String
@@ -42,19 +57,37 @@ model Field {
   updatedById  String?
   updatedBy    User?         @relation("updatedBy", fields: [updatedById], references: [id])
   NDVI         NDVI[]
+  FieldCrop    FieldCrop[]
 }
 
 model Crop {
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(255)
+  color       String      @db.VarChar(255)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
+  createdById String?
+  createdBy   User?       @relation("createdBy", fields: [createdById], references: [id])
+  updatedById String?
+  updatedBy   User?       @relation("updatedBy", fields: [updatedById], references: [id])
+  Season      Season[]
+  FieldCrop   FieldCrop[]
+}
+
+model FieldCrop {
   id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
-  color       String   @db.VarChar(255)
+  fieldId     String
+  field       Field    @relation(fields: [fieldId], references: [id])
+  cropId      String
+  crop        Crop     @relation(fields: [cropId], references: [id])
+  seasonId    String
+  season      Season   @relation(fields: [seasonId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
   createdById String?
   createdBy   User?    @relation("createdBy", fields: [createdById], references: [id])
   updatedById String?
   updatedBy   User?    @relation("updatedBy", fields: [updatedById], references: [id])
-  fields      Field[]
 }
 
 model NDVI {
@@ -62,7 +95,7 @@ model NDVI {
   date      DateTime
   fieldId   String
   field     Field    @relation(fields: [fieldId], references: [id])
-  picture  String
+  picture   String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
