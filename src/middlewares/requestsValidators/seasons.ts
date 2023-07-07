@@ -27,7 +27,7 @@ export const validateCreateFieldForSeason = async (
 ) => {
   try {
     await CreateFieldForSeasonSchema.parseAsync(req.body);
-    await CreateFieldForSeasonParametersSchema.parseAsync(req.body);
+    await CreateFieldForSeasonParametersSchema.parseAsync(req.params);
     next();
   } catch (error) {
     res.status(400);

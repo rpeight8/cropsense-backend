@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateGetNDVI } from "../middlewares/validators/ndvi";
+import { validateGetNDVI } from "../middlewares/requestsValidators/ndvi";
 import { getNDVI } from "../controllers/ndvi";
 import { protect } from "../middlewares/protect";
 

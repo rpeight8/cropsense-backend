@@ -5,20 +5,22 @@ export const createField = async (field: {
   name: string;
   geometryType: GeometryType;
   coordinates: any;
-  cropId: string | undefined;
   seasonId: string;
-  createdBy: string;
+  cropId: string | null;
+  createdById: string;
 }) => {
   const newField = await prisma.field.create({
     data: {
       name: field.name,
       geometryType: field.geometryType,
       coordinates: field.coordinates,
-      crop: {
-        connect: {
-          id: field.cropId,
-        },
-      },
+      crop: field.cropId
+        ? {
+            connect: {
+              id: field.cropId,
+            },
+          }
+        : undefined,
       season: {
         connect: {
           id: field.seasonId,
@@ -26,7 +28,7 @@ export const createField = async (field: {
       },
       createdBy: {
         connect: {
-          id: field.createdBy,
+          id: field.createdById,
         },
       },
     },
@@ -36,4 +38,43 @@ export const createField = async (field: {
   });
 
   return newField;
+};
+
+export const updateField = async (field: {
+  id: string;
+  name: string;
+  geometryType: GeometryType;
+  coordinates: any;
+  cropId: string | null;
+  updatedById: string;
+}) => {
+  const updatedField = await prisma.field.update({
+    where: {
+      id: field.id,
+    },
+    data: {
+      name: field.name,
+      geometryType: field.geometryType,
+      coordinates: field.coordinates,
+      crop: field.cropId
+        ? {
+            connect: {
+              id: field.cropId,
+            },
+          }
+        : {
+            disconnect: true,
+          },
+      updatedBy: {
+        connect: {
+          id: field.updatedById,
+        },
+      },
+    },
+    include: {
+      crop: true,
+    },
+  });
+
+  return updatedField;
 };

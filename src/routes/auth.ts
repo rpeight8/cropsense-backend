@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { signIn, signout, signUp, verify } from "../controllers/auth";
-import { validateSignIn, validateSignUp } from "../middlewares/validators/auth";
+import {
+  validateSignIn,
+  validateSignUp,
+} from "../middlewares/requestsValidators/auth";
 
 const router = Router();
 router.post("/auth/verify", verify);

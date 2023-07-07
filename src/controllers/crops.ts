@@ -3,7 +3,7 @@ import {
   CreateCropSchema,
   GetCropParametersSchema,
   UpdateCropSchema,
-} from "../middlewares/validators/crops";
+} from "../middlewares/requestsValidators/crops";
 import { ProtectedRequest } from "../middlewares/protect";
 import { NextFunction, Response } from "express";
 import prisma from "../modules/db";

@@ -4,14 +4,15 @@ import {
   getWorkspacesWithSeasonsByOwnerId,
   getWorkspacesWithSeasonsWithFieldsByOwnerId,
   createWorkspace as createWorkspaceDB,
-} from "../../models/workspace";
+} from "../models/workspace";
 import {
   CreateWorkspaceRequest,
+  WorkspaceExtendsSeasonsFieldsForResponse,
   WorkspaceResponse,
   WorkspacesExtendSeasonsFieldsResponse,
   WorkspacesExtendSeasonsResponse,
   WorkspacesResponse,
-} from "../../types/workspaces";
+} from "../types/workspaces";
 
 export const getWorkspaces = async (req: Request, res: WorkspacesResponse) => {
   const { businessUserId } = req.user;
@@ -37,25 +38,28 @@ export const getWorkspacesWithSeasonsWithFields = async (
     businessUserId
   );
 
-  const preparedWorkspaces = workspaces.map((workspace) => {
-    const preparedSeasons = workspace.seasons.map((season) => {
-      const preparedFields = season.fields.map((field) => {
-        return {
-          ...field,
-          geometry: {
-            type: field.geometryType,
-            coordinates: field.coordinates,
-          },
+  for (const workspace of workspaces) {
+    for (const season of workspace.seasons) {
+      // @ts-ignore WHAT A FILTHY HACK
+      season.fields = season.fields.map((field) => {
+        const geometry = {
+          type: field.geometryType,
+          coordinates: field.coordinates,
         };
+        const newField = {
+          id: field.id,
+          name: field.name,
+          geometry,
+          crop: field.crop,
+          seasonId: field.seasonId,
+        };
+        return newField;
       });
-      season.fields = preparedFields;
-      return season;
-    });
-    workspace.seasons = preparedSeasons;
-    return workspace;
-  });
+    }
+  }
 
-  res.status(200).json(preparedWorkspaces);
+  // @ts-ignore WHAT A FILTHY HACK
+  res.status(200).json(workspaces);
 };
 
 export const createWorkspace = async (

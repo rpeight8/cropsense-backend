@@ -32,4 +32,11 @@ export const CreateFieldSchema = z.object({
     })
     .nullable(),
 });
+
+export const UpdateFieldParametersSchema = z.object({
+  id: z.string(),
+});
+export const UpdateFieldSchema = CreateFieldSchema;
+
 export const CreateFieldsSchema = z.array(CreateFieldSchema);
+export const UpdateFieldsSchema = z.array(UpdateFieldSchema);

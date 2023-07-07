@@ -1,6 +1,10 @@
 import { TypeOf } from "zod";
 import { ProtectedRequest } from "../middlewares/protect";
-import { CreateFieldSchema } from "../schemas/fields";
+import {
+  CreateFieldSchema,
+  UpdateFieldParametersSchema,
+  UpdateFieldSchema,
+} from "../schemas/fields";
 import { FieldCoordinatesSchema, GeometryTypeEnum } from "../schemas/fields";
 import { Response } from "express";
 import prisma from "../modules/db";
@@ -22,3 +26,8 @@ export interface FieldForResponse {
 export type GeometryType = TypeOf<typeof GeometryTypeEnum>;
 
 export interface FieldResponse extends Response<FieldForResponse> {}
+
+export interface UpdateFieldRequest extends ProtectedRequest {
+  body: TypeOf<typeof UpdateFieldSchema>;
+  params: TypeOf<typeof UpdateFieldParametersSchema>;
+}

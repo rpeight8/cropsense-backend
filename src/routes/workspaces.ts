@@ -7,7 +7,7 @@ import {
 } from "../controllers/workspaces";
 import { create } from "domain";
 import { createWorkspace } from "../controllers/workspaces";
-import { validateCreateWorkspace } from "../middlewares/validators/workspace";
+import { validateCreateWorkspace } from "../middlewares/requestsValidators/workspace";
 
 const router = Router();
 

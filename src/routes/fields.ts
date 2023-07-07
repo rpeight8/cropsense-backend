@@ -1,9 +1,10 @@
 import { Router } from "express";
-import {} from "../controllers/fields";
+import { updateField } from "../controllers/fields";
 import { protect } from "../middlewares/protect";
+import { validateUpdateField } from "../middlewares/requestsValidators/fields";
 
 const router = Router();
 
-// router.get("/fields", protect, getFields);
+router.put("/fields/:id", protect, validateUpdateField, updateField);
 
 export default router;

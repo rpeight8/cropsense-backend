@@ -62,12 +62,29 @@ export const getWorkspacesWithSeasonsWithFieldsByOwnerId = async (
     where: {
       ownerId: businessUserId,
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
       seasons: {
-        include: {
+        select: {
+          id: true,
+          name: true,
+          startDate: true,
+          endDate: true,
           fields: {
-            include: {
-              crop: true,
+            select: {
+              id: true,
+              name: true,
+              geometryType: true,
+              coordinates: true,
+              seasonId: true,
+              crop: {
+                select: {
+                  id: true,
+                  name: true,
+                  color: true,
+                },
+              },
             },
           },
         },

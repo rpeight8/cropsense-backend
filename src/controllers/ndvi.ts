@@ -1,6 +1,6 @@
 import { TypeOf } from "zod";
 import { ProtectedRequest } from "../middlewares/protect";
-import { getNDVIParametersSchema } from "../middlewares/validators/ndvi";
+import { getNDVIParametersSchema } from "../middlewares/requestsValidators/ndvi";
 import { NextFunction, Response } from "express";
 import prisma from "../modules/db";
 import { NDVI } from "@prisma/client";

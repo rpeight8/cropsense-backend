@@ -1,14 +1,13 @@
 import { NextFunction } from "express";
-import { createSeason as createSeasonDB } from "../../models/season";
-import prisma from "../../modules/db";
+import { createSeason as createSeasonDB } from "../models/season";
 
 import {
   CreateFieldForSeasonRequest,
   CreateSeasonRequest,
   SeasonResponse,
-} from "../../types/seasons";
-import { FieldResponse } from "../../types/field";
-import { createField } from "../../models/field";
+} from "../types/seasons";
+import { FieldResponse } from "../types/field";
+import { createField, updateField } from "../models/field";
 
 export const prepareFieldForResponse = (
   field: Awaited<ReturnType<typeof createField>>
@@ -56,14 +55,15 @@ export const createFieldForSeason = async (
   try {
     const user = req.user;
     const { id: seasonId } = req.params;
+    const field = req.body;
 
     const createdField = await createField({
-      name: req.body.name,
-      geometryType: req.body.geometry.type,
-      coordinates: req.body.geometry.coordinates,
-      cropId: req.body.crop?.id,
       seasonId,
-      createdBy: user.businessUserId,
+      createdById: user.businessUserId,
+      geometryType: field.geometry.type,
+      coordinates: field.geometry.coordinates,
+      name: field.name,
+      cropId: field.crop ? field.crop.id : null,
     });
 
     const preparedField = prepareFieldForResponse(createdField);

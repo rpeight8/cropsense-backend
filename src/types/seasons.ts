@@ -33,3 +33,5 @@ export interface CreateSeasonRequest extends ProtectedRequest {
 export interface CreateFieldForSeasonRequest extends ProtectedRequest {
   body: TypeOf<typeof CreateFieldForSeasonSchema>;
 }
+
+
