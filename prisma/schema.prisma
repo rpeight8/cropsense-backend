@@ -11,33 +11,58 @@ datasource db {
 }
 
 model User {
-  id               String      @id @default(uuid())
-  email            String      @unique
-  name             String      @db.VarChar(255)
-  password         String
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @default(now())
-  createdFields    Field[]     @relation("createdBy")
-  updatedFields    Field[]     @relation("updatedBy")
-  createdCrops     Crop[]      @relation("createdBy")
-  updatedCrops     Crop[]      @relation("updatedBy")
-  createdSeason    Season[]    @relation("createdBy")
-  createdFieldCrop FieldCrop[] @relation("createdBy")
-  updatedFieldCrop FieldCrop[] @relation("updatedBy")
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?
+  businessUsers BusinessUser[]
+}
+
+model BusinessUser {
+  id                String      @id @default(uuid())
+  email             String      @unique @db.VarChar(255)
+  name              String      @db.VarChar(255)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime?
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  createdFields     Field[]     @relation("createdBy")
+  updatedFields     Field[]     @relation("updatedBy")
+  createdCrops      Crop[]      @relation("createdBy")
+  updatedCrops      Crop[]      @relation("updatedBy")
+  createdSeason     Season[]    @relation("createdBy")
+  createdWorkspaces Workspace[] @relation("createdBy")
+  updatedWorkspaces Workspace[] @relation("updatedBy")
+  ownedWorkspaces   Workspace[] @relation("owner")
+}
+
+model Workspace {
+  id          String        @id @default(uuid())
+  name        String        @db.VarChar(255)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?
+  ownerId     String
+  owner       BusinessUser  @relation("owner", fields: [ownerId], references: [id])
+  createdById String
+  createdBy   BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
+  updatedById String?
+  updatedBy   BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
+  seasons     Season[]
 }
 
 model Season {
-  id          String      @id @default(uuid())
-  name        String      @db.VarChar(255)
+  id          String       @id @default(uuid())
+  name        String       @db.VarChar(255)
+  workspaceId String
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
   startDate   DateTime
   endDate     DateTime
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
-  FieldCrop   FieldCrop[]
-  createdById String?
-  createdBy   User?       @relation("createdBy", fields: [createdById], references: [id])
-  Crop        Crop?       @relation(fields: [cropId], references: [id])
-  cropId      String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?
+  createdById String
+  createdBy   BusinessUser @relation("createdBy", fields: [createdById], references: [id])
+  fields      Field[]
 }
 
 enum GEOMETRY_TYPE {
@@ -51,51 +76,37 @@ model Field {
   geometryType GEOMETRY_TYPE @default(Polygon)
   coordinates  Json[]
   createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @default(now())
+  updatedAt    DateTime?
   createdById  String
-  createdBy    User?         @relation("createdBy", fields: [createdById], references: [id])
+  createdBy    BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
   updatedById  String?
-  updatedBy    User?         @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedBy    BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
+  cropId       String?
+  crop         Crop?         @relation(fields: [cropId], references: [id])
+  seasonId     String
+  season       Season        @relation(fields: [seasonId], references: [id])
   NDVI         NDVI[]
-  FieldCrop    FieldCrop[]
 }
 
 model Crop {
-  id          String      @id @default(uuid())
-  name        String      @db.VarChar(255)
-  color       String      @db.VarChar(255)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
-  createdById String?
-  createdBy   User?       @relation("createdBy", fields: [createdById], references: [id])
+  id          String        @id @default(uuid())
+  name        String        @db.VarChar(255)
+  color       String        @db.VarChar(255)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?
+  createdById String
+  createdBy   BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
   updatedById String?
-  updatedBy   User?       @relation("updatedBy", fields: [updatedById], references: [id])
-  Season      Season[]
-  FieldCrop   FieldCrop[]
-}
-
-model FieldCrop {
-  id          String   @id @default(uuid())
-  fieldId     String
-  field       Field    @relation(fields: [fieldId], references: [id])
-  cropId      String
-  crop        Crop     @relation(fields: [cropId], references: [id])
-  seasonId    String
-  season      Season   @relation(fields: [seasonId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  createdById String?
-  createdBy   User?    @relation("createdBy", fields: [createdById], references: [id])
-  updatedById String?
-  updatedBy   User?    @relation("updatedBy", fields: [updatedById], references: [id])
+  updatedBy   BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
+  fields      Field[]
 }
 
 model NDVI {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   date      DateTime
   fieldId   String
-  field     Field    @relation(fields: [fieldId], references: [id])
+  field     Field     @relation(fields: [fieldId], references: [id])
   picture   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
 }

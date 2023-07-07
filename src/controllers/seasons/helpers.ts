@@ -1,4 +1,4 @@
-import { getSeasonById } from "../../models/seasons";
+import { getSeasonById } from "../../models/season";
 
 export const validateSeasonBelongsToUser = async (
   seasonId: string,

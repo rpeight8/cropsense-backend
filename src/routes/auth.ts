@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { signin, signout, signup, verify } from "../controllers/auth";
+import { signIn, signout, signUp, verify } from "../controllers/auth";
+import { validateSignIn, validateSignUp } from "../middlewares/validators/auth";
 
 const router = Router();
-router.post("/verify", verify);
-router.post("/signin", signin);
-router.post("/signup", signup);
-router.post("/signout", signout);
+router.post("/auth/verify", verify);
+router.post("/auth/signin", validateSignIn, signIn);
+router.post("/auth/signup", validateSignUp, signUp);
+router.post("/auth/signout", signout);
 
 export default router;

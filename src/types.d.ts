@@ -1,11 +1,13 @@
-import type { User } from "@prisma/client";
+import type { User, BusinessUser } from "@prisma/client";
 
-export type UserFromToken = Pick<User, "id" | "email" | "name">;
+export type PublicUser = Pick<User, "id" | "email"> & {
+  businessUserId: BusinessUser["id"];
+};
 
 declare global {
   namespace Express {
     interface Request {
-      user: UserFromToken;
+      user: PublicUser;
     }
   }
 }

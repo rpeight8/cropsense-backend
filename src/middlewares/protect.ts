@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../modules/auth";
-import { UserFromToken } from "../types";
+import { PublicUser } from "../types";
 
 export interface ProtectedRequest extends Request {
-  user: UserFromToken;
+  user: PublicUser;
 }
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {

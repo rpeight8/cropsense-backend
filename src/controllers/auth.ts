@@ -2,6 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../modules/db";
 import { comparePassword, generateToken, verifyToken } from "../modules/auth";
 import { createUser } from "./user";
+import { getUserByEmail } from "../models/user";
+import { registerNewUser } from "../services/signUpService";
+import { signInRequest, signInResponse, signUpRequest } from "../types/auth";
+import { getBusinessUser } from "../models/businessUser";
 
 export const verify = async (
   req: Request,
@@ -23,7 +27,7 @@ export const verify = async (
   }
 };
 
-export const signin = async (req: Request, res: Response) => {
+export const signIn = async (req: signInRequest, res: signInResponse) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -46,10 +50,16 @@ export const signin = async (req: Request, res: Response) => {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
+  const businessUser = await getBusinessUser(user.id, user.email);
+
+  if (!businessUser) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
   const publicUser = {
     id: user.id,
     email: user.email,
-    name: user.name,
+    businessUserId: businessUser.id,
   };
 
   const token = generateToken(publicUser);
@@ -65,8 +75,27 @@ export const signin = async (req: Request, res: Response) => {
   res.end();
 };
 
-export const signup = async (req: Request, res: Response) => {
-  createUser(req, res);
+export const signUp = async (req: signUpRequest, res: Response) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
+
+  const exisitingUser = await getUserByEmail(email);
+
+  if (exisitingUser) {
+    return res.status(409).json({ message: "The email is already taken" });
+  }
+
+  try {
+    await registerNewUser(email, password);
+    res.status(201).json({ message: "User created" });
+    res.end();
+  } catch (err) {
+    res.status(400).json({ message: "Email already exists" });
+    res.end();
+  }
 };
 
 export const signout = async (req: Request, res: Response) => {
