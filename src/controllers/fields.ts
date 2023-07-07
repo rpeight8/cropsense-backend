@@ -5,6 +5,7 @@ import {
   UpdateFieldRequest,
 } from "../types/field";
 import { updateField as updateFieldDB } from "../models/field";
+import { isUserAllowedToAccessField } from "./utils";
 
 export const prepareFieldForUpdateResponse = (
   field: Awaited<ReturnType<typeof updateFieldDB>>
@@ -35,6 +36,11 @@ export const updateField = async (
     const { id } = req.params;
     const user = req.user;
     const field = req.body;
+
+    if (!isUserAllowedToAccessField(user.id, id)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this field");
+    }
 
     const updatedField = await updateFieldDB({
       id,

@@ -1,5 +1,24 @@
+import { getFieldById } from "../models/field";
 import { getSeasonById } from "../models/season";
 import { getWorkspaceById } from "../models/workspace";
+
+export const isUserAllowedToAccessField = async (
+  userId: string,
+  fieldId: string
+) => {
+  const field = await getFieldById(fieldId);
+
+  if (!field) {
+    return false;
+  }
+
+  const isSeasonAllowed = await isUserAllowedToAccessSeason(
+    userId,
+    field.seasonId
+  );
+
+  return isSeasonAllowed;
+};
 
 export const isUserAllowedToAccessSeason = async (
   userId: string,

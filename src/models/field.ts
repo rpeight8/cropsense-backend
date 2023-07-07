@@ -78,3 +78,16 @@ export const updateField = async (field: {
 
   return updatedField;
 };
+
+export const getFieldById = async (fieldId: string) => {
+  const field = await prisma.field.findFirst({
+    where: {
+      id: fieldId,
+    },
+    include: {
+      crop: true,
+    },
+  });
+
+  return field;
+};
