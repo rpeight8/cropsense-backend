@@ -26,12 +26,6 @@ export interface SeasonExtendsFieldsResponse
 export interface SeasonsExtendFieldsResponse
   extends Response<SeasonExtendsFieldsForResponse[]> {}
 
-export interface CreateSeasonRequest extends ProtectedRequest {
-  body: TypeOf<typeof CreateSeasonSchema>;
-}
-
 export interface CreateFieldForSeasonRequest extends ProtectedRequest {
   body: TypeOf<typeof CreateFieldForSeasonSchema>;
 }
-
-

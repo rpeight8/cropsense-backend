@@ -1,14 +1,12 @@
 import prisma from "../modules/db";
 import { DateTime } from "luxon";
 
+// TODO: Pass startDate and endDate as parameters
 export const createSeason = async (
   workspaceId: string,
   businessUserId: string,
   name: string
 ) => {
-  console.log("workspaceId", workspaceId);
-  console.log("businessUserId", businessUserId);
-  console.log("name", name);
   const currentDateTime = DateTime.now();
 
   const newSeason = await prisma.season.create({

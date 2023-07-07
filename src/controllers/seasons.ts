@@ -1,13 +1,11 @@
 import { NextFunction } from "express";
 import { createSeason as createSeasonDB } from "../models/season";
 
-import {
-  CreateFieldForSeasonRequest,
-  CreateSeasonRequest,
-  SeasonResponse,
-} from "../types/seasons";
+import { CreateFieldForSeasonRequest } from "../types/seasons";
 import { FieldResponse } from "../types/field";
 import { createField, updateField } from "../models/field";
+import { getWorkspaceById } from "../models/workspace";
+import { isUserAllowedToAccessSeason } from "./utils";
 
 export const prepareFieldForResponse = (
   field: Awaited<ReturnType<typeof createField>>
@@ -29,24 +27,6 @@ export const prepareFieldForResponse = (
   };
 };
 
-export const createSeason = async (
-  req: CreateSeasonRequest,
-  res: SeasonResponse,
-  next: NextFunction
-) => {
-  try {
-    const user = req.user;
-
-    const { name, startDate, endDate, workspaceId } = req.body;
-
-    const season = await createSeasonDB(workspaceId, user.businessUserId, name);
-
-    res.status(201).json(season);
-  } catch (err) {
-    next(err);
-  }
-};
-
 export const createFieldForSeason = async (
   req: CreateFieldForSeasonRequest,
   res: FieldResponse,
@@ -56,6 +36,11 @@ export const createFieldForSeason = async (
     const user = req.user;
     const { id: seasonId } = req.params;
     const field = req.body;
+
+    if (!isUserAllowedToAccessSeason(user.id, seasonId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this season");
+    }
 
     const createdField = await createField({
       seasonId,

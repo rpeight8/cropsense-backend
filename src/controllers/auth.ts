@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../modules/db";
 import { comparePassword, generateToken, verifyToken } from "../modules/auth";
-import { createUser } from "./user";
 import { getUserByEmail } from "../models/user";
 import { registerNewUser } from "../services/signUpService";
 import { signInRequest, signInResponse, signUpRequest } from "../types/auth";

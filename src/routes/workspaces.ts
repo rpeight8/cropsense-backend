@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { protect } from "../middlewares/protect";
 import {
+  createSeasonForWorkspace,
   getWorkspaces,
   getWorkspacesWithSeasons,
   getWorkspacesWithSeasonsWithFields,
 } from "../controllers/workspaces";
 import { create } from "domain";
 import { createWorkspace } from "../controllers/workspaces";
-import { validateCreateWorkspace } from "../middlewares/requestsValidators/workspace";
+import { validateCreateSeasonForWorkspace, validateCreateWorkspace } from "../middlewares/requestsValidators/workspace";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.get(
   getWorkspacesWithSeasonsWithFields
 );
 
+router.post("/workspaces/:id/seasons", protect, validateCreateSeasonForWorkspace, createSeasonForWorkspace);
 router.post("/workspaces", protect, validateCreateWorkspace, createWorkspace);
 
 export default router;
