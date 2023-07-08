@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signIn, signout, signUp, verify } from "../controllers/auth";
+import { signIn, signout, signUp, verify } from "../controllers/auth.controller";
 import {
   validateSignIn,
   validateSignUp,

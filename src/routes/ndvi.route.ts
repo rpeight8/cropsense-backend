@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateGetNDVI } from "../middlewares/requestsValidators/ndvi";
-import { getNDVI } from "../controllers/ndvi";
+import { getNDVI } from "../controllers/ndvi.controller";
 import { protect } from "../middlewares/protect";
 
 const router = Router();

@@ -1,11 +1,11 @@
 import { NextFunction } from "express";
-import { createSeason as createSeasonDB } from "../models/season";
+import { createSeason as createSeasonDB } from "../models/seasons.model";
 
 import { CreateFieldForSeasonRequest } from "../types/seasons";
 import { FieldResponse } from "../types/field";
-import { createField, updateField } from "../models/field";
-import { getWorkspaceById } from "../models/workspace";
-import { isUserAllowedToAccessSeason } from "./utils";
+import { createField, updateField } from "../models/fields.model";
+import { getWorkspaceById } from "../models/workspaces.model";
+import { isUserAllowedToAccessSeason } from "./utils.controller";
 
 export const prepareFieldForResponse = (
   field: Awaited<ReturnType<typeof createField>>

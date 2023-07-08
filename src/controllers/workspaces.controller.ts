@@ -5,7 +5,7 @@ import {
   getWorkspacesWithSeasonsWithFieldsByOwnerId,
   createWorkspace as createWorkspaceDB,
   getWorkspaceById,
-} from "../models/workspace";
+} from "../models/workspaces.model";
 import {
   CreateSeasonForWorkspaceRequest,
   CreateWorkspaceRequest,
@@ -15,9 +15,9 @@ import {
   WorkspacesExtendSeasonsResponse,
   WorkspacesResponse,
 } from "../types/workspaces";
-import { createSeason } from "../models/season";
+import { createSeason } from "../models/seasons.model";
 import { SeasonResponse } from "../types/seasons";
-import { isUserAllowedToAccessWorkspace } from "./utils";
+import { isUserAllowedToAccessWorkspace } from "./utils.controller";
 
 export const getWorkspaces = async (req: Request, res: WorkspacesResponse) => {
   const { businessUserId } = req.user;

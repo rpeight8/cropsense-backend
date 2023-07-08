@@ -9,12 +9,10 @@ export interface WorkspaceForResponse {
   id: string;
   name: string;
 }
-
 export interface WorkspaceExtendsSeasonsForResponse
   extends WorkspaceForResponse {
   seasons: SeasonForResponse[];
 }
-
 export interface WorkspaceExtendsSeasonsFieldsForResponse
   extends WorkspaceForResponse {
   seasons: SeasonExtendsFieldsForResponse[];

@@ -4,8 +4,8 @@ import {
   FieldResponse,
   UpdateFieldRequest,
 } from "../types/field";
-import { updateField as updateFieldDB } from "../models/field";
-import { isUserAllowedToAccessField } from "./utils";
+import { updateField as updateFieldDB } from "../models/fields.model";
+import { isUserAllowedToAccessField } from "./utils.controller";
 
 export const prepareFieldForUpdateResponse = (
   field: Awaited<ReturnType<typeof updateFieldDB>>

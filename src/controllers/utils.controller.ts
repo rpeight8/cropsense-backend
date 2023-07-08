@@ -1,6 +1,6 @@
-import { getFieldById } from "../models/field";
-import { getSeasonById } from "../models/season";
-import { getWorkspaceById } from "../models/workspace";
+import { getFieldById } from "../models/fields.model";
+import { getSeasonById } from "../models/seasons.model";
+import { getWorkspaceById } from "../models/workspaces.model";
 
 export const isUserAllowedToAccessField = async (
   userId: string,

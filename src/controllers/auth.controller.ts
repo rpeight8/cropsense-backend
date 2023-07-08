@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import prisma from "../modules/db";
 import { comparePassword, generateToken, verifyToken } from "../modules/auth";
-import { getUserByEmail } from "../models/user";
+import { getUserByEmail } from "../models/users.model";
 import { registerNewUser } from "../services/signUpService";
 import { signInRequest, signInResponse, signUpRequest } from "../types/auth";
-import { getBusinessUser } from "../models/businessUser";
+import { getBusinessUser } from "../models/businessUsers.model";
 
 export const verify = async (
   req: Request,

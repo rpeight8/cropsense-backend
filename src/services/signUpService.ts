@@ -1,8 +1,8 @@
-import { createUser } from "../models/user";
-import { createBusinessUser } from "../models/businessUser";
+import { createUser } from "../models/users.model";
+import { createBusinessUser } from "../models/businessUsers.model";
 import prisma from "../modules/db";
-import { createWorkspace } from "../models/workspace";
-import { createSeason } from "../models/season";
+import { createWorkspace } from "../models/workspaces.model";
+import { createSeason } from "../models/seasons.model";
 
 export const registerNewUser = async (email: string, password: string) => {
   return await prisma.$transaction(async () => {

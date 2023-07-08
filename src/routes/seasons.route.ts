@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateCreateFieldForSeason } from "../middlewares/requestsValidators/seasons";
-import { createFieldForSeason } from "../controllers/seasons";
+import { createFieldForSeason } from "../controllers/seasons.controller";
 import { protect } from "../middlewares/protect";
 
 const router = Router();

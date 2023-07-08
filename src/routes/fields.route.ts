@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { updateField } from "../controllers/fields";
+import { updateField } from "../controllers/fields.controller";
 import { protect } from "../middlewares/protect";
 import { validateUpdateField } from "../middlewares/requestsValidators/fields";
 

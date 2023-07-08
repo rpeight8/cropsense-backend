@@ -5,9 +5,9 @@ import {
   getWorkspaces,
   getWorkspacesWithSeasons,
   getWorkspacesWithSeasonsWithFields,
-} from "../controllers/workspaces";
+} from "../controllers/workspaces.controller";
 import { create } from "domain";
-import { createWorkspace } from "../controllers/workspaces";
+import { createWorkspace } from "../controllers/workspaces.controller";
 import { validateCreateSeasonForWorkspace, validateCreateWorkspace } from "../middlewares/requestsValidators/workspace";
 
 const router = Router();

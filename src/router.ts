@@ -1,10 +1,10 @@
 import { Router } from "express";
-import fields from "./routes/fields";
-import crops from "./routes/crops";
-import auth from "./routes/auth";
-import ndvi from "./routes/ndvi";
-import seasons from "./routes/seasons";
-import workspaces from "./routes/workspaces";
+import fields from "./routes/fields.route";
+import crops from "./routes/crops.route";
+import auth from "./routes/auth.route";
+import ndvi from "./routes/ndvi.route";
+import seasons from "./routes/seasons.route";
+import workspaces from "./routes/workspaces.route";
 
 const router = Router();
 
