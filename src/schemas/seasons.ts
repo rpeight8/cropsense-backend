@@ -17,4 +17,6 @@ export const CreateFieldForSeasonParametersSchema = z.object({
 });
 export const CreateFieldForSeasonSchema = CreateFieldSchema;
 
-
+export const GetSeasonFieldsParametersSchema = z.object({
+  id: z.string(),
+});

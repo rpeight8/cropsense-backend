@@ -9,14 +9,15 @@ import {
 import {
   CreateSeasonForWorkspaceRequest,
   CreateWorkspaceRequest,
+  GetWorkspacesSeasonsRequest,
   WorkspaceExtendsSeasonsFieldsForResponse,
   WorkspaceResponse,
   WorkspacesExtendSeasonsFieldsResponse,
   WorkspacesExtendSeasonsResponse,
   WorkspacesResponse,
 } from "../types/workspaces";
-import { createSeason } from "../models/seasons.model";
-import { SeasonResponse } from "../types/seasons";
+import { createSeason, getSeasonsByWorkspaceId } from "../models/seasons.model";
+import { SeasonResponse, SeasonsResponse } from "../types/seasons";
 import { isUserAllowedToAccessWorkspace } from "./utils.controller";
 
 export const getWorkspaces = async (req: Request, res: WorkspacesResponse) => {
@@ -121,5 +122,26 @@ export const createSeasonForWorkspace = async (
     res.status(201).json(season);
   } catch (err) {
     next(err);
+  }
+};
+
+export const getWorkspacesSeasons = async (
+  req: GetWorkspacesSeasonsRequest,
+  res: SeasonsResponse,
+  next: NextFunction
+) => {
+  try {
+    const { businessUserId } = req.user;
+    const { id: workspaceId } = req.params;
+
+    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this workspace");
+    }
+
+    const seasons = await getSeasonsByWorkspaceId(workspaceId);
+    res.status(200).json(seasons);
+  } catch (error) {
+    next(error);
   }
 };

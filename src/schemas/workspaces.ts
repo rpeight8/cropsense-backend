@@ -8,5 +8,8 @@ export const CreateWorkspaceSchema = z.object({
 export const CreateSeasonForWorkspaceParametersSchema = z.object({
   id: z.string(),
 });
+export const GetWorkspacesSeasonsParametersSchema = z.object({
+  id: z.string(),
+});
 
-export const CreateSeasonForWorkspaceSchema = CreateSeasonSchema;
+export const CreateSeasonForWorkspaceBodySchema = CreateSeasonSchema;

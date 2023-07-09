@@ -8,7 +8,7 @@ import workspaces from "./routes/workspaces.route";
 
 const router = Router();
 
-// router.use("/api", fields);
+router.use("/api", fields);
 // router.use("/api", crops);
 // router.use("/api", ndvi);
 // router.use(user);

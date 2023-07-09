@@ -1,6 +1,9 @@
 import e, { Response } from "express";
 import { TypeOf } from "zod";
-import { CreateWorkspaceSchema } from "../schemas/workspaces";
+import {
+  CreateWorkspaceSchema,
+  GetWorkspacesSeasonsParametersSchema,
+} from "../schemas/workspaces";
 import { ProtectedRequest } from "../middlewares/protect";
 import { SeasonExtendsFieldsForResponse, SeasonForResponse } from "./seasons";
 import { CreateSeasonSchema } from "../schemas/seasons";
@@ -33,4 +36,8 @@ export interface CreateWorkspaceRequest extends ProtectedRequest {
 
 export interface CreateSeasonForWorkspaceRequest extends ProtectedRequest {
   body: TypeOf<typeof CreateSeasonSchema>;
+}
+
+export interface GetWorkspacesSeasonsRequest extends ProtectedRequest {
+  params: TypeOf<typeof GetWorkspacesSeasonsParametersSchema>;
 }

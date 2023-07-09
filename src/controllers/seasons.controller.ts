@@ -1,10 +1,18 @@
 import { NextFunction } from "express";
 import { createSeason as createSeasonDB } from "../models/seasons.model";
 
-import { CreateFieldForSeasonRequest } from "../types/seasons";
+import {
+  CreateFieldForSeasonRequest,
+  CreateFieldForSeasonResponse,
+  GetSeasonFieldsRequest,
+  GetSeasonFieldsResponse,
+} from "../types/seasons";
 import { FieldResponse } from "../types/field";
-import { createField, updateField } from "../models/fields.model";
-import { getWorkspaceById } from "../models/workspaces.model";
+import {
+  createField,
+  getFieldsBySeasonId,
+  updateField,
+} from "../models/fields.model";
 import { isUserAllowedToAccessSeason } from "./utils.controller";
 
 export const prepareFieldForResponse = (
@@ -29,7 +37,7 @@ export const prepareFieldForResponse = (
 
 export const createFieldForSeason = async (
   req: CreateFieldForSeasonRequest,
-  res: FieldResponse,
+  res: CreateFieldForSeasonResponse,
   next: NextFunction
 ) => {
   try {
@@ -56,5 +64,29 @@ export const createFieldForSeason = async (
     res.status(201).json(preparedField);
   } catch (err) {
     next(err);
+  }
+};
+
+export const getSeasonFields = async (
+  req: GetSeasonFieldsRequest,
+  res: GetSeasonFieldsResponse,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    const { id: seasonId } = req.params;
+
+    if (!isUserAllowedToAccessSeason(user.id, seasonId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this season");
+    }
+
+    const fields = await getFieldsBySeasonId(seasonId);
+
+    const preparedFields = fields.map(prepareFieldForResponse);
+
+    res.status(200).json(preparedFields);
+  } catch (error) {
+    next(error);
   }
 };

@@ -26,6 +26,7 @@ export interface FieldForResponse {
 export type GeometryType = TypeOf<typeof GeometryTypeEnum>;
 
 export interface FieldResponse extends Response<FieldForResponse> {}
+export interface FieldsResponse extends Response<FieldForResponse[]> {}
 
 export interface UpdateFieldRequest extends ProtectedRequest {
   body: TypeOf<typeof UpdateFieldSchema>;

@@ -1,10 +1,11 @@
 import { Response } from "express";
-import { FieldForResponse } from "./field";
+import { FieldForResponse, FieldResponse, FieldsResponse } from "./field";
 import { ProtectedRequest } from "../middlewares/protect";
 import { TypeOf } from "zod";
 import {
   CreateFieldForSeasonSchema,
   CreateSeasonSchema,
+  GetSeasonFieldsParametersSchema,
 } from "../schemas/seasons";
 
 export interface SeasonForResponse {
@@ -29,3 +30,9 @@ export interface SeasonsExtendFieldsResponse
 export interface CreateFieldForSeasonRequest extends ProtectedRequest {
   body: TypeOf<typeof CreateFieldForSeasonSchema>;
 }
+export interface CreateFieldForSeasonResponse extends FieldResponse {}
+
+export interface GetSeasonFieldsRequest extends ProtectedRequest {
+  params: TypeOf<typeof GetSeasonFieldsParametersSchema>;
+}
+export interface GetSeasonFieldsResponse extends FieldsResponse {}

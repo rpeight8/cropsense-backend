@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   CreateFieldForSeasonParametersSchema,
   CreateFieldForSeasonSchema,
-  CreateSeasonSchema,
+  GetSeasonFieldsParametersSchema,
 } from "../../schemas/seasons";
 
 export const validateCreateFieldForSeason = async (
@@ -14,6 +14,20 @@ export const validateCreateFieldForSeason = async (
   try {
     await CreateFieldForSeasonSchema.parseAsync(req.body);
     await CreateFieldForSeasonParametersSchema.parseAsync(req.params);
+    next();
+  } catch (error) {
+    res.status(400);
+    next(error);
+  }
+};
+
+export const validateGetSeasonFields = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await GetSeasonFieldsParametersSchema.parseAsync(req.params);
     next();
   } catch (error) {
     res.status(400);

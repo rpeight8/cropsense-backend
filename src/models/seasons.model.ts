@@ -39,3 +39,13 @@ export const getSeasonById = async (seasonId: string) => {
 
   return season;
 };
+
+export const getSeasonsByWorkspaceId = async (workspaceId: string) => {
+  const seasons = await prisma.season.findMany({
+    where: {
+      workspaceId,
+    },
+  });
+
+  return seasons;
+};

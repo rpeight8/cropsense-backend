@@ -91,3 +91,16 @@ export const getFieldById = async (fieldId: string) => {
 
   return field;
 };
+
+export const getFieldsBySeasonId = async (seasonId: string) => {
+  const fields = await prisma.field.findMany({
+    where: {
+      seasonId,
+    },
+    include: {
+      crop: true,
+    },
+  });
+
+  return fields;
+};
