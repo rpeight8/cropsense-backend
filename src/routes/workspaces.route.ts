@@ -50,6 +50,11 @@ router.put(
   updateWorkspace
 );
 
-router.delete("/workspaces/:id", validateDeleteWorkspace, deleteWorkspace);
+router.delete(
+  "/workspaces/:id",
+  protect,
+  validateDeleteWorkspace,
+  deleteWorkspace
+);
 
 export default router;

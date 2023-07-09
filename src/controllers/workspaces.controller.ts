@@ -138,8 +138,8 @@ export const deleteWorkspace = async (
       throw new Error("User is not allowed to access this workspace");
     }
 
-    await deleteWorkspaceDB(workspaceId);
-    res.status(204).json();
+    const deletedWorkspace = await deleteWorkspaceDB(workspaceId);
+    res.status(204).json(deletedWorkspace);
   } catch (err) {
     next(err);
   }

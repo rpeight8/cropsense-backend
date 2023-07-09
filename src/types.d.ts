@@ -1,8 +1,7 @@
-import type { User, BusinessUser } from "@prisma/client";
+import { PublicUserSchema } from "./schemas/auth";
+import { z } from "zod";
 
-export type PublicUser = Pick<User, "id" | "email"> & {
-  businessUserId: BusinessUser["id"];
-};
+export type PublicUser = z.TypeOf<typeof PublicUserSchema>;
 
 declare global {
   namespace Express {
