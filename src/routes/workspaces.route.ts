@@ -6,12 +6,14 @@ import {
   getWorkspacesSeasons,
   getWorkspacesWithSeasons,
   getWorkspacesWithSeasonsWithFields,
+  updateWorkspace,
 } from "../controllers/workspaces.controller";
 import { create } from "domain";
 import { createWorkspace } from "../controllers/workspaces.controller";
 import {
   validateCreateSeasonForWorkspace,
   validateCreateWorkspace,
+  validateUpdateWorkspace,
   validateWorkspacesSeasons,
 } from "../middlewares/requestsValidators/workspace";
 
@@ -38,5 +40,12 @@ router.post(
   createSeasonForWorkspace
 );
 router.post("/workspaces", protect, validateCreateWorkspace, createWorkspace);
+
+router.put(
+  "/workspaces/:id",
+  protect,
+  validateUpdateWorkspace,
+  updateWorkspace
+);
 
 export default router;

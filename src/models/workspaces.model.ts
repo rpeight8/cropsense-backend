@@ -20,6 +20,31 @@ export const createWorkspace = async (bussinesUserId: string, name: string) => {
   return newWorkspace;
 };
 
+export const updateWorkspace = async (
+  id: string,
+  businessUserId: string,
+  workspace: {
+    name: string;
+  }
+) => {
+  const updatedWorkspace = await prisma.workspace.update({
+    where: {
+      id,
+    },
+    data: {
+      name: workspace.name,
+      updatedBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+      updatedAt: new Date(),
+    },
+  });
+
+  return updatedWorkspace;
+};
+
 export const getWorkspaceById = async (workspaceId: string) => {
   const workspace = await prisma.workspace.findFirst({
     where: {

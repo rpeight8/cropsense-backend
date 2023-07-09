@@ -4,13 +4,15 @@ import {
   getWorkspacesWithSeasonsByOwnerId,
   getWorkspacesWithSeasonsWithFieldsByOwnerId,
   createWorkspace as createWorkspaceDB,
+  updateWorkspace as updateWorkspaceDB,
   getWorkspaceById,
 } from "../models/workspaces.model";
 import {
   CreateSeasonForWorkspaceRequest,
   CreateWorkspaceRequest,
   GetWorkspacesSeasonsRequest,
-  WorkspaceExtendsSeasonsFieldsForResponse,
+  UpdateWorkspaceRequest,
+  UpdateWorkspaceResponse,
   WorkspaceResponse,
   WorkspacesExtendSeasonsFieldsResponse,
   WorkspacesExtendSeasonsResponse,
@@ -47,6 +49,7 @@ export const getWorkspacesWithSeasonsWithFields = async (
 ) => {
   try {
     const { businessUserId } = req.user;
+
     const workspaces = await getWorkspacesWithSeasonsWithFieldsByOwnerId(
       businessUserId
     );
@@ -93,31 +96,47 @@ export const createWorkspace = async (
   }
 };
 
+export const updateWorkspace = async (
+  req: UpdateWorkspaceRequest,
+  res: UpdateWorkspaceResponse,
+  next: NextFunction
+) => {
+  try {
+    const { businessUserId } = req.user;
+    const { id: workspaceId } = req.params;
+
+    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this workspace");
+    }
+
+    const updatedWorkspace = await updateWorkspaceDB(
+      workspaceId,
+      businessUserId,
+      req.body
+    );
+    res.status(200).json(updatedWorkspace);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const createSeasonForWorkspace = async (
   req: CreateSeasonForWorkspaceRequest,
   res: SeasonResponse,
   next: NextFunction
 ) => {
   try {
-    const user = req.user;
+    const { businessUserId } = req.user;
 
     const { name, workspaceId } = req.body;
 
-    if (!isUserAllowedToAccessWorkspace(user.id, workspaceId)) {
+    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
       res.status(403);
       throw new Error("User is not allowed to access this workspace");
     }
 
-    const workspace = await getWorkspaceById(workspaceId);
-
-    if (!workspace || workspace.createdById !== user.businessUserId) {
-      res.status(403);
-      throw new Error(
-        "You are not allowed to create a season in this workspace"
-      );
-    }
-
-    const season = await createSeason(workspaceId, user.businessUserId, name);
+    const season = await createSeason(workspaceId, businessUserId, name);
 
     res.status(201).json(season);
   } catch (err) {

@@ -2,8 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import {
   CreateSeasonForWorkspaceParametersSchema,
   CreateSeasonForWorkspaceBodySchema,
-  CreateWorkspaceSchema,
+  CreateWorkspaceBodySchema,
   GetWorkspacesSeasonsParametersSchema,
+  UpdateWorkspaceBodySchema,
+  UpdateWorkspaceParametersSchema,
 } from "../../schemas/workspaces";
 
 export const validateCreateWorkspace = async (
@@ -12,10 +14,25 @@ export const validateCreateWorkspace = async (
   next: NextFunction
 ) => {
   try {
-    await CreateWorkspaceSchema.parseAsync(req.body);
+    await CreateWorkspaceBodySchema.parseAsync(req.body);
     next();
   } catch (err) {
     next(err);
+  }
+};
+
+export const validateUpdateWorkspace = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await UpdateWorkspaceBodySchema.parseAsync(req.body);
+    await UpdateWorkspaceParametersSchema.parseAsync(req.params);
+    next();
+  } catch (error) {
+    res.status(400);
+    next(error);
   }
 };
 

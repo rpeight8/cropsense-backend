@@ -1,8 +1,10 @@
 import e, { Response } from "express";
 import { TypeOf } from "zod";
 import {
-  CreateWorkspaceSchema,
+  CreateWorkspaceBodySchema,
   GetWorkspacesSeasonsParametersSchema,
+  UpdateWorkspaceBodySchema,
+  UpdateWorkspaceParametersSchema,
 } from "../schemas/workspaces";
 import { ProtectedRequest } from "../middlewares/protect";
 import { SeasonExtendsFieldsForResponse, SeasonForResponse } from "./seasons";
@@ -31,8 +33,15 @@ export interface WorkspacesExtendSeasonsFieldsResponse
   extends Response<WorkspaceExtendsSeasonsFieldsForResponse[]> {}
 
 export interface CreateWorkspaceRequest extends ProtectedRequest {
-  body: TypeOf<typeof CreateWorkspaceSchema>;
+  body: TypeOf<typeof CreateWorkspaceBodySchema>;
 }
+export interface CreateWorkspaceResponse extends WorkspaceResponse {}
+
+export interface UpdateWorkspaceRequest extends ProtectedRequest {
+  body: TypeOf<typeof UpdateWorkspaceBodySchema>;
+  params: TypeOf<typeof UpdateWorkspaceParametersSchema>;
+}
+export interface UpdateWorkspaceResponse extends WorkspaceResponse {}
 
 export interface CreateSeasonForWorkspaceRequest extends ProtectedRequest {
   body: TypeOf<typeof CreateSeasonSchema>;
