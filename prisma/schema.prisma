@@ -48,21 +48,21 @@ model Workspace {
   createdBy   BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
   updatedById String?
   updatedBy   BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
-  seasons     Season[]
+  seasons     Season[]      @relation("workspaceSeasons")
 }
 
 model Season {
   id          String       @id @default(uuid())
   name        String       @db.VarChar(255)
   workspaceId String
-  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace    @relation("workspaceSeasons", fields: [workspaceId], references: [id], onDelete: Cascade)
   startDate   DateTime
   endDate     DateTime
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?
   createdById String
   createdBy   BusinessUser @relation("createdBy", fields: [createdById], references: [id])
-  fields      Field[]
+  fields      Field[]      @relation("seasonFields")
 }
 
 enum GEOMETRY_TYPE {
@@ -84,7 +84,7 @@ model Field {
   cropId       String?
   crop         Crop?         @relation(fields: [cropId], references: [id])
   seasonId     String
-  season       Season        @relation(fields: [seasonId], references: [id])
+  season       Season        @relation("seasonFields", fields: [seasonId], references: [id], onDelete: Cascade)
   NDVI         NDVI[]
 }
 
