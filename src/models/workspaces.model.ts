@@ -45,6 +45,16 @@ export const updateWorkspace = async (
   return updatedWorkspace;
 };
 
+export const deleteWorkspace = async (id: string) => {
+  const deletedWorkspace = await prisma.workspace.delete({
+    where: {
+      id,
+    },
+  });
+
+  return deletedWorkspace;
+};
+
 export const getWorkspaceById = async (workspaceId: string) => {
   const workspace = await prisma.workspace.findFirst({
     where: {

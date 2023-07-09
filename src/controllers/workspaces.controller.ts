@@ -6,10 +6,13 @@ import {
   createWorkspace as createWorkspaceDB,
   updateWorkspace as updateWorkspaceDB,
   getWorkspaceById,
+  deleteWorkspace as deleteWorkspaceDB,
 } from "../models/workspaces.model";
 import {
   CreateSeasonForWorkspaceRequest,
   CreateWorkspaceRequest,
+  DeleteWorkspaceRequest,
+  DeleteWorkspaceResponse,
   GetWorkspacesSeasonsRequest,
   UpdateWorkspaceRequest,
   UpdateWorkspaceResponse,
@@ -116,6 +119,27 @@ export const updateWorkspace = async (
       req.body
     );
     res.status(200).json(updatedWorkspace);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteWorkspace = async (
+  req: DeleteWorkspaceRequest,
+  res: DeleteWorkspaceResponse,
+  next: NextFunction
+) => {
+  try {
+    const { businessUserId } = req.user;
+    const { id: workspaceId } = req.params;
+
+    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this workspace");
+    }
+
+    await deleteWorkspaceDB(workspaceId);
+    res.status(204).json();
   } catch (err) {
     next(err);
   }

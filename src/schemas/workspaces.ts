@@ -8,8 +8,11 @@ export const CreateWorkspaceBodySchema = z.object({
 export const UpdateWorkspaceBodySchema = z.object({
   name: z.string(),
 });
-
 export const UpdateWorkspaceParametersSchema = z.object({
+  id: z.string(),
+});
+
+export const DeleteWorkspaceParametersSchema = z.object({
   id: z.string(),
 });
 

@@ -43,6 +43,11 @@ export interface UpdateWorkspaceRequest extends ProtectedRequest {
 }
 export interface UpdateWorkspaceResponse extends WorkspaceResponse {}
 
+export interface DeleteWorkspaceRequest extends ProtectedRequest {
+  params: TypeOf<typeof UpdateWorkspaceParametersSchema>;
+}
+export interface DeleteWorkspaceResponse extends WorkspaceResponse {}
+
 export interface CreateSeasonForWorkspaceRequest extends ProtectedRequest {
   body: TypeOf<typeof CreateSeasonSchema>;
 }

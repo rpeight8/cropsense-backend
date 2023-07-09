@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import e, { NextFunction, Request, Response } from "express";
 import {
   CreateSeasonForWorkspaceParametersSchema,
   CreateSeasonForWorkspaceBodySchema,
@@ -6,6 +6,7 @@ import {
   GetWorkspacesSeasonsParametersSchema,
   UpdateWorkspaceBodySchema,
   UpdateWorkspaceParametersSchema,
+  DeleteWorkspaceParametersSchema,
 } from "../../schemas/workspaces";
 
 export const validateCreateWorkspace = async (
@@ -29,6 +30,20 @@ export const validateUpdateWorkspace = async (
   try {
     await UpdateWorkspaceBodySchema.parseAsync(req.body);
     await UpdateWorkspaceParametersSchema.parseAsync(req.params);
+    next();
+  } catch (error) {
+    res.status(400);
+    next(error);
+  }
+};
+
+export const validateDeleteWorkspace = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await DeleteWorkspaceParametersSchema.parseAsync(req.params);
     next();
   } catch (error) {
     res.status(400);

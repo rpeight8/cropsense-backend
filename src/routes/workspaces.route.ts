@@ -2,6 +2,7 @@ import { Router } from "express";
 import { protect } from "../middlewares/protect";
 import {
   createSeasonForWorkspace,
+  deleteWorkspace,
   getWorkspaces,
   getWorkspacesSeasons,
   getWorkspacesWithSeasons,
@@ -13,6 +14,7 @@ import { createWorkspace } from "../controllers/workspaces.controller";
 import {
   validateCreateSeasonForWorkspace,
   validateCreateWorkspace,
+  validateDeleteWorkspace,
   validateUpdateWorkspace,
   validateWorkspacesSeasons,
 } from "../middlewares/requestsValidators/workspace";
@@ -47,5 +49,7 @@ router.put(
   validateUpdateWorkspace,
   updateWorkspace
 );
+
+router.delete("/workspaces/:id", validateDeleteWorkspace, deleteWorkspace);
 
 export default router;
