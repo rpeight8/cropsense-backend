@@ -10,8 +10,6 @@ export const createSeason = async (
     "name" | "startDate" | "endDate"
   >
 ) => {
-  // const currentDateTime = DateTime.now();
-  console.log(season);
   const newSeason = await prisma.season.create({
     data: {
       name: season.name,
@@ -31,6 +29,44 @@ export const createSeason = async (
   });
 
   return newSeason;
+};
+
+export const updateSeason = async (
+  id: string,
+  businessUserId: string,
+  season: Pick<
+    Parameters<typeof prisma.season.update>[0]["data"],
+    "name" | "startDate" | "endDate"
+  >
+) => {
+  const updatedSeason = await prisma.season.update({
+    where: {
+      id,
+    },
+    data: {
+      name: season.name,
+      startDate: season.startDate,
+      endDate: season.endDate,
+      updatedBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+      updatedAt: new Date(),
+    },
+  });
+
+  return updatedSeason;
+};
+
+export const deleteSeason = async (id: string) => {
+  const deletedSeason = await prisma.season.delete({
+    where: {
+      id,
+    },
+  });
+
+  return deletedSeason;
 };
 
 export const getSeasonById = async (seasonId: string) => {

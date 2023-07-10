@@ -3,10 +3,13 @@ import { FieldForResponse, FieldResponse, FieldsResponse } from "./field";
 import { ProtectedRequest } from "../middlewares/protect";
 import { TypeOf, z } from "zod";
 import {
-  CreateFieldForSeasonSchema,
+  CreateFieldForSeasonBodySchema,
+  CreateFieldForSeasonParametersSchema,
   CreateSeasonBodySchema,
   GetSeasonFieldsParametersSchema,
   SeasonForResponseSchema,
+  UpdateSeasonBodySchema,
+  UpdateSeasonParametersSchema,
 } from "../schemas/seasons";
 
 export interface SeasonForResponse
@@ -25,7 +28,8 @@ export interface SeasonsExtendFieldsResponse
   extends Response<SeasonExtendsFieldsForResponse[]> {}
 
 export interface CreateFieldForSeasonRequest extends ProtectedRequest {
-  body: TypeOf<typeof CreateFieldForSeasonSchema>;
+  params: TypeOf<typeof CreateFieldForSeasonParametersSchema>;
+  body: TypeOf<typeof CreateFieldForSeasonBodySchema>;
 }
 export interface CreateFieldForSeasonResponse extends FieldResponse {}
 
@@ -33,3 +37,13 @@ export interface GetSeasonFieldsRequest extends ProtectedRequest {
   params: TypeOf<typeof GetSeasonFieldsParametersSchema>;
 }
 export interface GetSeasonFieldsResponse extends FieldsResponse {}
+
+export interface UpdateSeasonRequest extends ProtectedRequest {
+  body: TypeOf<typeof UpdateSeasonBodySchema>;
+  params: TypeOf<typeof UpdateSeasonParametersSchema>;
+}
+export interface UpdateSeasonResponse extends SeasonResponse {}
+
+export interface DeleteSeasonRequest extends ProtectedRequest {
+  params: TypeOf<typeof UpdateSeasonParametersSchema>;
+}

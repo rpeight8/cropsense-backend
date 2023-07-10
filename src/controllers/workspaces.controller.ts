@@ -12,7 +12,6 @@ import {
   CreateSeasonForWorkspaceRequest,
   CreateWorkspaceRequest,
   DeleteWorkspaceRequest,
-  DeleteWorkspaceResponse,
   GetWorkspacesSeasonsRequest,
   UpdateWorkspaceRequest,
   UpdateWorkspaceResponse,
@@ -126,7 +125,7 @@ export const updateWorkspace = async (
 
 export const deleteWorkspace = async (
   req: DeleteWorkspaceRequest,
-  res: DeleteWorkspaceResponse,
+  res: Response,
   next: NextFunction
 ) => {
   try {
@@ -138,8 +137,8 @@ export const deleteWorkspace = async (
       throw new Error("User is not allowed to access this workspace");
     }
 
-    const deletedWorkspace = await deleteWorkspaceDB(workspaceId);
-    res.status(204).json(deletedWorkspace);
+    await deleteWorkspaceDB(workspaceId);
+    res.status(204).end();
   } catch (err) {
     next(err);
   }
@@ -160,7 +159,11 @@ export const createSeasonForWorkspace = async (
       throw new Error("User is not allowed to access this workspace");
     }
 
-    const createdSeason = await createSeason(workspaceId, businessUserId, season);
+    const createdSeason = await createSeason(
+      workspaceId,
+      businessUserId,
+      season
+    );
 
     res.status(201).json(createdSeason);
   } catch (err) {
@@ -183,7 +186,7 @@ export const getWorkspacesSeasons = async (
     }
 
     const seasons = await getSeasonsByWorkspaceId(workspaceId);
-    console.log(seasons[0]);
+
     res.status(200).json(seasons);
   } catch (error) {
     next(error);

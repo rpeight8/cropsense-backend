@@ -1,18 +1,19 @@
-import { NextFunction } from "express";
-import { createSeason as createSeasonDB } from "../models/seasons.model";
+import { NextFunction, Response } from "express";
+import {
+  updateSeason as updateSeasonDB,
+  deleteSeason as deleteSeasonDB,
+} from "../models/seasons.model";
 
 import {
   CreateFieldForSeasonRequest,
   CreateFieldForSeasonResponse,
+  DeleteSeasonRequest,
   GetSeasonFieldsRequest,
   GetSeasonFieldsResponse,
+  UpdateSeasonRequest,
+  UpdateSeasonResponse,
 } from "../types/seasons";
-import { FieldResponse } from "../types/field";
-import {
-  createField,
-  getFieldsBySeasonId,
-  updateField,
-} from "../models/fields.model";
+import { createField, getFieldsBySeasonId } from "../models/fields.model";
 import { isUserAllowedToAccessSeason } from "./utils.controller";
 
 export const prepareFieldForResponse = (
@@ -41,18 +42,18 @@ export const createFieldForSeason = async (
   next: NextFunction
 ) => {
   try {
-    const user = req.user;
+    const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
     const field = req.body;
 
-    if (!isUserAllowedToAccessSeason(user.id, seasonId)) {
+    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
       res.status(403);
       throw new Error("User is not allowed to access this season");
     }
 
     const createdField = await createField({
       seasonId,
-      createdById: user.businessUserId,
+      createdById: businessUserId,
       geometryType: field.geometry.type,
       coordinates: field.geometry.coordinates,
       name: field.name,
@@ -73,10 +74,10 @@ export const getSeasonFields = async (
   next: NextFunction
 ) => {
   try {
-    const user = req.user;
+    const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
 
-    if (!isUserAllowedToAccessSeason(user.id, seasonId)) {
+    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
       res.status(403);
       throw new Error("User is not allowed to access this season");
     }
@@ -86,6 +87,55 @@ export const getSeasonFields = async (
     const preparedFields = fields.map(prepareFieldForResponse);
 
     res.status(200).json(preparedFields);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSeason = async (
+  req: UpdateSeasonRequest,
+  res: UpdateSeasonResponse,
+  next: NextFunction
+) => {
+  try {
+    const { businessUserId } = req.user;
+    const { id: seasonId } = req.params;
+    const season = req.body;
+
+    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this season");
+    }
+
+    const updatedSeason = await updateSeasonDB(
+      seasonId,
+      businessUserId,
+      season
+    );
+
+    res.status(200).json(updatedSeason);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSeason = async (
+  req: DeleteSeasonRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { businessUserId } = req.user;
+    const { id: seasonId } = req.params;
+
+    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this season");
+    }
+
+    await deleteSeasonDB(seasonId);
+
+    res.status(200).json({ message: "Season deleted successfully" });
   } catch (error) {
     next(error);
   }
