@@ -1,11 +1,12 @@
-import type { User } from "@prisma/client";
+import { PublicUserSchema } from "./schemas/auth";
+import { z } from "zod";
 
-export type UserFromToken = Pick<User, "id" | "email" | "name">;
+export type PublicUser = z.TypeOf<typeof PublicUserSchema>;
 
 declare global {
   namespace Express {
     interface Request {
-      user: UserFromToken;
+      user: PublicUser;
     }
   }
 }

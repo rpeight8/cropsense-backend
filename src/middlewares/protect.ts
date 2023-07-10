@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../modules/auth";
-import { UserFromToken } from "../types";
+import { PublicUser } from "../types";
+import { PublicUserSchema } from "../schemas/auth";
 
 export interface ProtectedRequest extends Request {
-  user: UserFromToken;
+  user: PublicUser;
 }
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {
@@ -17,7 +18,8 @@ export const protect = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded;
+    const publicUser = PublicUserSchema.parse(decoded);
+    req.user = publicUser;
     next();
   } catch (err) {
     res.status(401);
