@@ -8,7 +8,7 @@ import {
 } from "../schemas/workspaces";
 import { ProtectedRequest } from "../middlewares/protect";
 import { SeasonExtendsFieldsForResponse, SeasonForResponse } from "./seasons";
-import { CreateSeasonSchema } from "../schemas/seasons";
+import { CreateSeasonBodySchema } from "../schemas/seasons";
 
 export interface WorkspaceForResponse {
   id: string;
@@ -49,7 +49,7 @@ export interface DeleteWorkspaceRequest extends ProtectedRequest {
 export interface DeleteWorkspaceResponse extends WorkspaceResponse {}
 
 export interface CreateSeasonForWorkspaceRequest extends ProtectedRequest {
-  body: TypeOf<typeof CreateSeasonSchema>;
+  body: TypeOf<typeof CreateSeasonBodySchema>;
 }
 
 export interface GetWorkspacesSeasonsRequest extends ProtectedRequest {

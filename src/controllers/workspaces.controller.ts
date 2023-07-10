@@ -152,17 +152,17 @@ export const createSeasonForWorkspace = async (
 ) => {
   try {
     const { businessUserId } = req.user;
-
-    const { name, workspaceId } = req.body;
+    const { id: workspaceId } = req.params;
+    const season = req.body;
 
     if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
       res.status(403);
       throw new Error("User is not allowed to access this workspace");
     }
 
-    const season = await createSeason(workspaceId, businessUserId, name);
+    const createdSeason = await createSeason(workspaceId, businessUserId, season);
 
-    res.status(201).json(season);
+    res.status(201).json(createdSeason);
   } catch (err) {
     next(err);
   }
@@ -183,6 +183,7 @@ export const getWorkspacesSeasons = async (
     }
 
     const seasons = await getSeasonsByWorkspaceId(workspaceId);
+    console.log(seasons[0]);
     res.status(200).json(seasons);
   } catch (error) {
     next(error);

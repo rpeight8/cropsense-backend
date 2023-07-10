@@ -1,19 +1,16 @@
 import { Response } from "express";
 import { FieldForResponse, FieldResponse, FieldsResponse } from "./field";
 import { ProtectedRequest } from "../middlewares/protect";
-import { TypeOf } from "zod";
+import { TypeOf, z } from "zod";
 import {
   CreateFieldForSeasonSchema,
-  CreateSeasonSchema,
+  CreateSeasonBodySchema,
   GetSeasonFieldsParametersSchema,
+  SeasonForResponseSchema,
 } from "../schemas/seasons";
 
-export interface SeasonForResponse {
-  id: string;
-  name: string;
-  endDate: Date;
-  startDate: Date;
-}
+export interface SeasonForResponse
+  extends z.TypeOf<typeof SeasonForResponseSchema> {}
 
 export interface SeasonExtendsFieldsForResponse extends SeasonForResponse {
   fields: FieldForResponse[];

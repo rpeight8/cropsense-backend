@@ -12,11 +12,11 @@ export const registerNewUser = async (email: string, password: string) => {
       newBussinesUser.id,
       "My first workspace"
     );
-    const newSeason = createSeason(
-      newWorkspace.id,
-      newBussinesUser.id,
-      "My first season"
-    );
+    const newSeason = createSeason(newWorkspace.id, newBussinesUser.id, {
+      name: "My first season",
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
+    });
 
     return { newUser, newBussinesUser };
   });

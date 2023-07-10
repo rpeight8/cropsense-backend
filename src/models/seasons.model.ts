@@ -5,15 +5,18 @@ import { DateTime } from "luxon";
 export const createSeason = async (
   workspaceId: string,
   businessUserId: string,
-  name: string
+  season: Pick<
+    Parameters<typeof prisma.season.create>[0]["data"],
+    "name" | "startDate" | "endDate"
+  >
 ) => {
-  const currentDateTime = DateTime.now();
-
+  // const currentDateTime = DateTime.now();
+  console.log(season);
   const newSeason = await prisma.season.create({
     data: {
-      name,
-      startDate: currentDateTime.startOf("year").toJSDate(),
-      endDate: currentDateTime.endOf("year").toJSDate(),
+      name: season.name,
+      startDate: season.startDate,
+      endDate: season.endDate,
       workspace: {
         connect: {
           id: workspaceId,
