@@ -1,5 +1,5 @@
 import prisma from "../modules/db";
-import { GeometryType } from "../types/field";
+import { GeometryType } from "../types/fields";
 
 export const createField = async (field: {
   name: string;
@@ -77,6 +77,16 @@ export const updateField = async (field: {
   });
 
   return updatedField;
+};
+
+export const deleteField = async (fieldId: string) => {
+  const deletedField = await prisma.field.delete({
+    where: {
+      id: fieldId,
+    },
+  });
+
+  return deletedField;
 };
 
 export const getFieldById = async (fieldId: string) => {

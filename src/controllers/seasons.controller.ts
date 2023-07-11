@@ -22,6 +22,7 @@ export const prepareFieldForResponse = (
   return {
     id: field.id,
     name: field.name,
+    seasonId: field.seasonId,
     geometry: {
       type: field.geometryType,
       coordinates: field.coordinates,

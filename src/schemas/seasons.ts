@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CreateFieldSchema } from "./fields";
+import { CreateFieldBodySchema } from "./fields";
 
 const isValidUTCDateString = (value: string) => {
   const date = new Date(value);
@@ -51,7 +51,7 @@ export const GetSeasonParametersSchema = z.object({
 export const CreateFieldForSeasonParametersSchema = z.object({
   id: z.string(),
 });
-export const CreateFieldForSeasonBodySchema = CreateFieldSchema;
+export const CreateFieldForSeasonBodySchema = CreateFieldBodySchema;
 
 export const GetSeasonFieldsParametersSchema = z.object({
   id: z.string(),

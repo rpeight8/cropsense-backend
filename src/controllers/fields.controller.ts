@@ -1,10 +1,14 @@
 import { NextFunction, Response } from "express";
 import {
+  DeleteFieldRequest,
   FieldForResponse,
   FieldResponse,
   UpdateFieldRequest,
-} from "../types/field";
-import { updateField as updateFieldDB } from "../models/fields.model";
+} from "../types/fields";
+import {
+  updateField as updateFieldDB,
+  deleteField as deleteFieldDB,
+} from "../models/fields.model";
 import { isUserAllowedToAccessField } from "./utils.controller";
 
 export const prepareFieldForUpdateResponse = (
@@ -13,6 +17,7 @@ export const prepareFieldForUpdateResponse = (
   return {
     id: field.id,
     name: field.name,
+    seasonId: field.seasonId,
     geometry: {
       type: field.geometryType,
       coordinates: field.coordinates,
@@ -52,6 +57,28 @@ export const updateField = async (
     });
 
     res.status(200).json(prepareFieldForUpdateResponse(updatedField));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteField = async (
+  req: DeleteFieldRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    if (!isUserAllowedToAccessField(user.id, id)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this field");
+    }
+
+    await deleteFieldDB(id);
+
+    res.status(204).end();
   } catch (error) {
     next(error);
   }

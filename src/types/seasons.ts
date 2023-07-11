@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { FieldForResponse, FieldResponse, FieldsResponse } from "./field";
+import { FieldForResponse, FieldResponse, FieldsResponse } from "./fields";
 import { ProtectedRequest } from "../middlewares/protect";
 import { TypeOf, z } from "zod";
 import {

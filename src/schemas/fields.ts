@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CropForResponseSchema } from "./crops";
 
 export const GeometryTypeEnum = z.enum(["Polygon", "MultyPolygon"]);
 
@@ -20,7 +21,19 @@ export const FieldCoordinatesSchema = z.tuple([
   FieldHoleSchema,
 ]);
 
-export const CreateFieldSchema = z.object({
+export const FieldForResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  geometry: z.object({
+    type: GeometryTypeEnum,
+    // TODO: FIX TYPE
+    coordinates: z.any(),
+  }),
+  seasonId: z.string(),
+  crop: CropForResponseSchema.nullable(),
+});
+
+export const CreateFieldBodySchema = z.object({
   name: z.string(),
   geometry: z.object({
     type: GeometryTypeEnum,
@@ -36,7 +49,11 @@ export const CreateFieldSchema = z.object({
 export const UpdateFieldParametersSchema = z.object({
   id: z.string(),
 });
-export const UpdateFieldSchema = CreateFieldSchema;
+export const UpdateFieldBodySchema = CreateFieldBodySchema;
 
-export const CreateFieldsSchema = z.array(CreateFieldSchema);
-export const UpdateFieldsSchema = z.array(UpdateFieldSchema);
+export const CreateFieldsBodySchema = z.array(CreateFieldBodySchema);
+export const UpdateFieldsBodySchema = z.array(UpdateFieldBodySchema);
+
+export const DeleteFieldParametersSchema = z.object({
+  id: z.string(),
+});

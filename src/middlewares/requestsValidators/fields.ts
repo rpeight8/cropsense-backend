@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  CreateFieldSchema,
+  CreateFieldBodySchema,
   UpdateFieldParametersSchema,
-  UpdateFieldSchema,
+  UpdateFieldBodySchema,
+  DeleteFieldParametersSchema,
 } from "../../schemas/fields";
 
 export const validateCreateField = async (
@@ -12,7 +13,7 @@ export const validateCreateField = async (
 ) => {
   try {
     console.log(req.body.crop);
-    await CreateFieldSchema.parseAsync(req.body);
+    await CreateFieldBodySchema.parseAsync(req.body);
     next();
   } catch (error) {
     console.log("ERROR");
@@ -27,8 +28,22 @@ export const validateUpdateField = async (
   next: NextFunction
 ) => {
   try {
-    await UpdateFieldSchema.parseAsync(req.body);
+    await UpdateFieldBodySchema.parseAsync(req.body);
     await UpdateFieldParametersSchema.parseAsync(req.params);
+    next();
+  } catch (error) {
+    res.status(400);
+    next(error);
+  }
+};
+
+export const validateDeleteField = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await DeleteFieldParametersSchema.parseAsync(req.params);
     next();
   } catch (error) {
     res.status(400);
