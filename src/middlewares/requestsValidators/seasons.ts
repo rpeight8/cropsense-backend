@@ -1,21 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { z } from "zod";
 import {
-  CreateFieldForSeasonParametersSchema,
-  CreateFieldForSeasonBodySchema,
-  GetSeasonFieldsParametersSchema,
-  UpdateSeasonBodySchema,
-  UpdateSeasonParametersSchema,
-} from "../../schemas/seasons";
+  CreateSeasonBusinessFieldRequestSchema,
+  DeleteSeasonRequestSchema,
+  GetSeasonBusinessFieldsRequestSchema,
+  UpdateSeasonRequestSchema,
+} from "../../schemas/requests";
 
-export const validateCreateFieldForSeason = async (
+export const validateCreateSeasonBusinessField = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await CreateFieldForSeasonBodySchema.parseAsync(req.body);
-    await CreateFieldForSeasonParametersSchema.parseAsync(req.params);
+    await CreateSeasonBusinessFieldRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);
@@ -23,13 +20,13 @@ export const validateCreateFieldForSeason = async (
   }
 };
 
-export const validateGetSeasonFields = async (
+export const validateGetSeasonBusinessFields = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await GetSeasonFieldsParametersSchema.parseAsync(req.params);
+    await GetSeasonBusinessFieldsRequestSchema.parseAsync(req.params);
     next();
   } catch (error) {
     res.status(400);
@@ -43,8 +40,7 @@ export const validateUpdateSeason = async (
   next: NextFunction
 ) => {
   try {
-    await UpdateSeasonBodySchema.parseAsync(req.body);
-    await UpdateSeasonParametersSchema.parseAsync(req.params);
+    await UpdateSeasonRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);
@@ -58,10 +54,10 @@ export const validateDeleteSeason = async (
   next: NextFunction
 ) => {
   try {
-    await UpdateSeasonParametersSchema.parseAsync(req.params);
+    await DeleteSeasonRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);
     next(error);
   }
-}
+};

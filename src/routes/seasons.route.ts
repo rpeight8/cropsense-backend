@@ -1,32 +1,32 @@
 import { Router } from "express";
 import {
-  validateCreateFieldForSeason,
-  validateDeleteSeason,
-  validateGetSeasonFields,
-  validateUpdateSeason,
-} from "../middlewares/requestsValidators/seasons";
-import {
   createFieldForSeason,
   deleteSeason,
   getSeasonFields,
   updateSeason,
 } from "../controllers/seasons.controller";
 import { protect } from "../middlewares/protect";
+import {
+  validateCreateSeasonBusinessField,
+  validateDeleteSeason,
+  validateGetSeasonBusinessFields,
+  validateUpdateSeason,
+} from "../middlewares/requestsValidators/seasons";
 
 const router = Router();
 
 router.post(
   "/seasons/:id/fields",
   protect,
-  validateCreateFieldForSeason,
-  createFieldForSeason
+  validateCreateSeasonBusinessField,
+  createSeasonBusinessField
 );
 
 router.get(
   "/seasons/:id/fields",
   protect,
-  validateGetSeasonFields,
-  getSeasonFields
+  validateGetSeasonBusinessFields,
+  getSeasonBusinessFields
 );
 
 router.put("/seasons/:id", protect, validateUpdateSeason, updateSeason);

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   getWorkspacesByOwnerId,
   getWorkspacesWithSeasonsByOwnerId,
-  getWorkspacesWithSeasonsWithFieldsByOwnerId,
+  // getWorkspacesWithSeasonsWithFieldsByOwnerId,
   createWorkspace as createWorkspaceDB,
   updateWorkspace as updateWorkspaceDB,
   getWorkspaceById,
@@ -44,44 +44,44 @@ export const getWorkspacesWithSeasons = async (
   }
 };
 
-export const getWorkspacesWithSeasonsWithFields = async (
-  req: Request,
-  res: WorkspacesExtendSeasonsFieldsResponse,
-  next: NextFunction
-) => {
-  try {
-    const { businessUserId } = req.user;
+// export const getWorkspacesWithSeasonsWithFields = async (
+//   req: Request,
+//   res: WorkspacesExtendSeasonsFieldsResponse,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { businessUserId } = req.user;
 
-    const workspaces = await getWorkspacesWithSeasonsWithFieldsByOwnerId(
-      businessUserId
-    );
+//     const workspaces = await getWorkspacesWithSeasonsWithFieldsByOwnerId(
+//       businessUserId
+//     );
 
-    for (const workspace of workspaces) {
-      for (const season of workspace.seasons) {
-        // @ts-ignore WHAT A FILTHY HACK
-        season.fields = season.fields.map((field) => {
-          const geometry = {
-            type: field.geometryType,
-            coordinates: field.coordinates,
-          };
-          const newField = {
-            id: field.id,
-            name: field.name,
-            geometry,
-            crop: field.crop,
-            seasonId: field.seasonId,
-          };
-          return newField;
-        });
-      }
-    }
+//     for (const workspace of workspaces) {
+//       for (const season of workspace.seasons) {
+//         // @ts-ignore WHAT A FILTHY HACK
+//         season.fields = season.fields.map((field) => {
+//           const geometry = {
+//             type: field.geometryType,
+//             coordinates: field.coordinates,
+//           };
+//           const newField = {
+//             id: field.id,
+//             name: field.name,
+//             geometry,
+//             crop: field.crop,
+//             seasonId: field.seasonId,
+//           };
+//           return newField;
+//         });
+//       }
+//     }
 
-    // @ts-ignore WHAT A FILTHY HACK
-    res.status(200).json(workspaces);
-  } catch (error) {
-    next(error);
-  }
-};
+//     // @ts-ignore WHAT A FILTHY HACK
+//     res.status(200).json(workspaces);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 export const createWorkspace = async (
   req: CreateWorkspaceRequest,

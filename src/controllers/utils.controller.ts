@@ -4,9 +4,9 @@ import { getWorkspaceById } from "../models/workspaces.model";
 
 export const isUserAllowedToAccessField = async (
   userId: string,
-  fieldId: string
+  bussinessFieldId: string
 ) => {
-  const field = await getFieldById(fieldId);
+  const field = await getBusinessFieldById(bussinessFieldId);
 
   if (!field) {
     return false;

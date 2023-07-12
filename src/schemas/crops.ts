@@ -1,9 +1,8 @@
 import { z } from "zod";
 
-export const CropForResponseSchema = z.object({
+export const CropAPIResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
   color: z.string(),
 });
-
-export const CropsForResponseSchema = z.array(CropForResponseSchema);
+export const CropsAPIResponseSchema = z.array(CropAPIResponseSchema);
