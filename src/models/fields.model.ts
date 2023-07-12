@@ -1,14 +1,16 @@
 import prisma from "../modules/db";
 import { GeometryType } from "../types/fields";
 
-export const createField = async (field: {
-  name: string;
-  geometryType: GeometryType;
-  coordinates: any;
-  seasonId: string;
-  cropId: string | null;
-  createdById: string;
-}) => {
+export const createField = async (
+  bussinesUserId: string,
+  field: {
+    name: string;
+    geometryType: GeometryType;
+    coordinates: any;
+    seasonId: string;
+    cropId: string | null;
+  }
+) => {
   const newField = await prisma.field.create({
     data: {
       name: field.name,
@@ -28,7 +30,7 @@ export const createField = async (field: {
       },
       createdBy: {
         connect: {
-          id: field.createdById,
+          id: bussinesUserId,
         },
       },
     },
@@ -40,17 +42,19 @@ export const createField = async (field: {
   return newField;
 };
 
-export const updateField = async (field: {
-  id: string;
-  name: string;
-  geometryType: GeometryType;
-  coordinates: any;
-  cropId: string | null;
-  updatedById: string;
-}) => {
+export const updateField = async (
+  id: string,
+  bussinesUserId: string,
+  field: {
+    name: string;
+    geometryType: GeometryType;
+    coordinates: any;
+    cropId: string | null;
+  }
+) => {
   const updatedField = await prisma.field.update({
     where: {
-      id: field.id,
+      id,
     },
     data: {
       name: field.name,
@@ -67,9 +71,10 @@ export const updateField = async (field: {
           },
       updatedBy: {
         connect: {
-          id: field.updatedById,
+          id: bussinesUserId,
         },
       },
+      updatedAt: new Date(),
     },
     include: {
       crop: true,
@@ -79,20 +84,20 @@ export const updateField = async (field: {
   return updatedField;
 };
 
-export const deleteField = async (fieldId: string) => {
+export const deleteField = async (id: string) => {
   const deletedField = await prisma.field.delete({
     where: {
-      id: fieldId,
+      id,
     },
   });
 
   return deletedField;
 };
 
-export const getFieldById = async (fieldId: string) => {
+export const getFieldById = async (id: string) => {
   const field = await prisma.field.findFirst({
     where: {
-      id: fieldId,
+      id,
     },
     include: {
       crop: true,

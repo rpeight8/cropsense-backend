@@ -20,22 +20,26 @@ model User {
 }
 
 model BusinessUser {
-  id                String      @id @default(uuid())
-  email             String      @unique @db.VarChar(255)
-  name              String      @db.VarChar(255)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime?
-  userId            String
-  user              User        @relation(fields: [userId], references: [id])
-  createdFields     Field[]     @relation("createdBy")
-  updatedFields     Field[]     @relation("updatedBy")
-  createdCrops      Crop[]      @relation("createdBy")
-  updatedCrops      Crop[]      @relation("updatedBy")
-  createdSeason     Season[]    @relation("createdBy")
-  updatedSeason     Season[]    @relation("updatedBy")
-  createdWorkspaces Workspace[] @relation("createdBy")
-  updatedWorkspaces Workspace[] @relation("updatedBy")
-  ownedWorkspaces   Workspace[] @relation("owner")
+  id                    String          @id @default(uuid())
+  email                 String          @unique @db.VarChar(255)
+  name                  String          @db.VarChar(255)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime?
+  userId                String
+  user                  User            @relation(fields: [userId], references: [id])
+  createdFields         Field[]         @relation("createdBy")
+  updatedFields         Field[]         @relation("updatedBy")
+  createdBussinesFields BusinessField[] @relation("createdBy")
+  updatedBussinesFields BusinessField[] @relation("updatedBy")
+  createdCropRotations  CropRotation[]  @relation("createdBy")
+  updatedCropRotations  CropRotation[]  @relation("updatedBy")
+  createdCrops          Crop[]          @relation("createdBy")
+  updatedCrops          Crop[]          @relation("updatedBy")
+  createdSeason         Season[]        @relation("createdBy")
+  updatedSeason         Season[]        @relation("updatedBy")
+  createdWorkspaces     Workspace[]     @relation("createdBy")
+  updatedWorkspaces     Workspace[]     @relation("updatedBy")
+  ownedWorkspaces       Workspace[]     @relation("owner")
 }
 
 model Workspace {
@@ -53,19 +57,19 @@ model Workspace {
 }
 
 model Season {
-  id          String        @id @default(uuid())
-  name        String        @db.VarChar(255)
-  workspaceId String
-  workspace   Workspace     @relation("workspaceSeasons", fields: [workspaceId], references: [id], onDelete: Cascade)
-  startDate   DateTime
-  endDate     DateTime
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime?
-  createdById String
-  createdBy   BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
-  updatedById String?
-  updatedBy   BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
-  fields      Field[]       @relation("seasonFields")
+  id             String          @id @default(uuid())
+  name           String          @db.VarChar(255)
+  workspaceId    String
+  workspace      Workspace       @relation("workspaceSeasons", fields: [workspaceId], references: [id], onDelete: Cascade)
+  startDate      DateTime
+  endDate        DateTime
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime?
+  createdById    String
+  createdBy      BusinessUser    @relation("createdBy", fields: [createdById], references: [id])
+  updatedById    String?
+  updatedBy      BusinessUser?   @relation("updatedBy", fields: [updatedById], references: [id])
+  businessFields BusinessField[] @relation("seasonBussinesFields")
 }
 
 enum GEOMETRY_TYPE {
@@ -74,41 +78,66 @@ enum GEOMETRY_TYPE {
 }
 
 model Field {
-  id           String        @id @default(uuid())
-  name         String        @db.VarChar(255)
-  geometryType GEOMETRY_TYPE @default(Polygon)
-  coordinates  Json[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime?
-  createdById  String
-  createdBy    BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
-  updatedById  String?
-  updatedBy    BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
-  cropId       String?
-  crop         Crop?         @relation(fields: [cropId], references: [id])
-  seasonId     String
-  season       Season        @relation("seasonFields", fields: [seasonId], references: [id], onDelete: Cascade)
-  NDVI         NDVI[]
-}
-
-model Crop {
   id          String        @id @default(uuid())
   name        String        @db.VarChar(255)
-  color       String        @db.VarChar(255)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime?
   createdById String
   createdBy   BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
   updatedById String?
   updatedBy   BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
-  fields      Field[]
+}
+
+model BusinessField {
+  id            String         @id @default(uuid())
+  name          String         @db.VarChar(255)
+  geometry      Json[]
+  geometryType  GEOMETRY_TYPE  @default(Polygon)
+  cropRotations CropRotation[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?
+  createdById   String
+  createdBy     BusinessUser   @relation("createdBy", fields: [createdById], references: [id])
+  updatedById   String?
+  updatedBy     BusinessUser?  @relation("updatedBy", fields: [updatedById], references: [id])
+  seasonId      String
+  season        Season         @relation("seasonBussinesFields", fields: [seasonId], references: [id], onDelete: Cascade)
+}
+
+model CropRotation {
+  id              String        @id @default(uuid())
+  bussinesFieldId String
+  bussinesField   BusinessField @relation(fields: [bussinesFieldId], references: [id])
+  cropId          String
+  crop            Crop          @relation(fields: [cropId], references: [id])
+  startDate       DateTime
+  endDate         DateTime
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime?
+  createdById     String
+  createdBy       BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
+  updatedById     String?
+  updatedBy       BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
+}
+
+model Crop {
+  id            String         @id @default(uuid())
+  name          String         @db.VarChar(255)
+  color         String         @db.VarChar(255)
+  cropRotations CropRotation[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?
+  createdById   String
+  createdBy     BusinessUser   @relation("createdBy", fields: [createdById], references: [id])
+  updatedById   String?
+  updatedBy     BusinessUser?  @relation("updatedBy", fields: [updatedById], references: [id])
 }
 
 model NDVI {
   id        String    @id @default(uuid())
   date      DateTime
-  fieldId   String
-  field     Field     @relation(fields: [fieldId], references: [id])
+  // fieldId   String
+  // field     Field     @relation(fields: [fieldId], references: [id])
   picture   String
   createdAt DateTime  @default(now())
   updatedAt DateTime?
