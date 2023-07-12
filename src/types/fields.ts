@@ -5,6 +5,8 @@ import {
   UpdateFieldParametersSchema,
   UpdateFieldBodySchema,
   FieldForResponseSchema,
+  GetFieldSummaryParametersSchema,
+  FieldSummaryForResponseSchema,
 } from "../schemas/fields";
 import { FieldCoordinatesSchema, GeometryTypeEnum } from "../schemas/fields";
 import { Response } from "express";
@@ -26,3 +28,13 @@ export interface UpdateFieldRequest extends ProtectedRequest {
 export interface DeleteFieldRequest extends ProtectedRequest {
   params: TypeOf<typeof UpdateFieldParametersSchema>;
 }
+
+export interface GetFieldSummaryRequest extends ProtectedRequest {
+  params: TypeOf<typeof GetFieldSummaryParametersSchema>;
+}
+
+export interface FieldSummaryForResponse
+  extends TypeOf<typeof FieldSummaryForResponseSchema> {}
+
+export interface GetFieldSummaryResponse
+  extends Response<FieldSummaryForResponse> {}

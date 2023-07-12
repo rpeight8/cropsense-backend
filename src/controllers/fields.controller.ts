@@ -3,6 +3,8 @@ import {
   DeleteFieldRequest,
   FieldForResponse,
   FieldResponse,
+  GetFieldSummaryRequest,
+  GetFieldSummaryResponse,
   UpdateFieldRequest,
 } from "../types/fields";
 import {
@@ -38,18 +40,16 @@ export const updateField = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
-    const user = req.user;
+    const { id: fieldId } = req.params;
+    const { businessUserId } = req.user;
     const field = req.body;
 
-    if (!isUserAllowedToAccessField(user.id, id)) {
+    if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
       res.status(403);
       throw new Error("User is not allowed to access this field");
     }
 
-    const updatedField = await updateFieldDB({
-      id,
-      updatedById: user.businessUserId,
+    const updatedField = await updateFieldDB(fieldId, businessUserId, {
       geometryType: field.geometry.type,
       coordinates: field.geometry.coordinates,
       name: field.name,
@@ -68,17 +68,39 @@ export const deleteField = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
-    const user = req.user;
+    const { id: fieldId } = req.params;
+    const { businessUserId } = req.user;
 
-    if (!isUserAllowedToAccessField(user.id, id)) {
+    if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
       res.status(403);
       throw new Error("User is not allowed to access this field");
     }
 
-    await deleteFieldDB(id);
+    await deleteFieldDB(fieldId);
 
     res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFieldSummary = async (
+  req: GetFieldSummaryRequest,
+  res: GetFieldSummaryResponse,
+  next: NextFunction
+) => {
+  try {
+    const { id: fieldId } = req.params;
+    const { businessUserId } = req.user;
+
+    if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
+      res.status(403);
+      throw new Error("User is not allowed to access this field");
+    }
+
+    const summary = await collectFieldSummary(fieldId);
+
+    res.status(200).json(summary);
   } catch (error) {
     next(error);
   }

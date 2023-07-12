@@ -46,6 +46,22 @@ export const CreateFieldBodySchema = z.object({
     .nullable(),
 });
 
+export const FieldSummaryForResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  area: z.number(),
+  areaUnit: z.string(),
+  seasons: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      crop: CropForResponseSchema.nullable(),
+      startDate: z.date(),
+      endDate: z.date(),
+    })
+  ),
+});
+
 export const UpdateFieldParametersSchema = z.object({
   id: z.string(),
 });
@@ -55,5 +71,13 @@ export const CreateFieldsBodySchema = z.array(CreateFieldBodySchema);
 export const UpdateFieldsBodySchema = z.array(UpdateFieldBodySchema);
 
 export const DeleteFieldParametersSchema = z.object({
+  id: z.string(),
+});
+
+export const GetFieldSummaryParametersSchema = z.object({
+  id: z.string(),
+});
+
+export const GetFieldWeatherParametersSchema = z.object({
   id: z.string(),
 });

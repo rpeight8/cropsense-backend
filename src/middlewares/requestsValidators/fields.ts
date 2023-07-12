@@ -4,6 +4,7 @@ import {
   UpdateFieldParametersSchema,
   UpdateFieldBodySchema,
   DeleteFieldParametersSchema,
+  GetFieldSummaryParametersSchema,
 } from "../../schemas/fields";
 
 export const validateCreateField = async (
@@ -44,6 +45,20 @@ export const validateDeleteField = async (
 ) => {
   try {
     await DeleteFieldParametersSchema.parseAsync(req.params);
+    next();
+  } catch (error) {
+    res.status(400);
+    next(error);
+  }
+};
+
+export const validateGetFieldSummary = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await GetFieldSummaryParametersSchema.parseAsync(req.params);
     next();
   } catch (error) {
     res.status(400);
