@@ -1,21 +1,16 @@
 import { NextFunction, Response } from "express";
-import {
-  DeleteFieldRequest,
-  FieldForResponse,
-  FieldResponse,
-  GetFieldSummaryRequest,
-  GetFieldSummaryResponse,
-  UpdateFieldRequest,
-} from "../types/fields";
-import {
-  updateField as updateFieldDB,
-  deleteField as deleteFieldDB,
-} from "../models/fields.model";
 import { isUserAllowedToAccessField } from "./utils.controller";
+import {
+  DeleteBusinessFieldRequest,
+  UpdateBusinessFieldRequest,
+} from "../types/requests";
+import { updateBusinessField as updateBusinessFieldDB } from "../models/businessFields.model";
+
+import { UpdateBusinessFieldResponse } from "../types/responses";
 
 export const prepareBusinessFieldForUpdateResponse = (
   field: Awaited<ReturnType<typeof updateFieldDB>>
-): FieldForResponse => {
+) => {
   return {
     id: field.id,
     name: field.name,
@@ -36,7 +31,7 @@ export const prepareBusinessFieldForUpdateResponse = (
 
 export const updateBusinessField = async (
   req: UpdateBusinessFieldRequest,
-  res: FieldResponse,
+  res: UpdateBusinessFieldResponse,
   next: NextFunction
 ) => {
   try {
@@ -49,11 +44,10 @@ export const updateBusinessField = async (
       throw new Error("User is not allowed to access this field");
     }
 
-    const updatedField = await updateFieldDB(fieldId, businessUserId, {
+    const updatedField = await updateBusinessFieldDB(fieldId, businessUserId, {
       geometryType: field.geometry.type,
-      coordinates: field.geometry.coordinates,
+      geometry: field.geometry.coordinates,
       name: field.name,
-      cropId: field.crop ? field.crop.id : null,
     });
 
     res.status(200).json(prepareFieldForUpdateResponse(updatedField));
@@ -62,8 +56,8 @@ export const updateBusinessField = async (
   }
 };
 
-export const deleteField = async (
-  req: DeleteFieldRequest,
+export const deleteBusinessField = async (
+  req: DeleteBusinessFieldRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -76,7 +70,7 @@ export const deleteField = async (
       throw new Error("User is not allowed to access this field");
     }
 
-    await deleteFieldDB(fieldId);
+    await deleteBusinessFieldDB(fieldId);
 
     res.status(204).end();
   } catch (error) {
@@ -84,24 +78,24 @@ export const deleteField = async (
   }
 };
 
-export const getFieldSummary = async (
-  req: GetFieldSummaryRequest,
-  res: GetFieldSummaryResponse,
-  next: NextFunction
-) => {
-  try {
-    const { id: fieldId } = req.params;
-    const { businessUserId } = req.user;
+// export const getFieldSummary = async (
+//   req: GetFieldSummaryRequest,
+//   res: GetFieldSummaryResponse,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { id: fieldId } = req.params;
+//     const { businessUserId } = req.user;
 
-    if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this field");
-    }
+//     if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
+//       res.status(403);
+//       throw new Error("User is not allowed to access this field");
+//     }
 
-    const summary = await collectFieldSummary(fieldId);
+//     const summary = await collectFieldSummary(fieldId);
 
-    res.status(200).json(summary);
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200).json(summary);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
