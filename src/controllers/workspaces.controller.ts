@@ -8,41 +8,45 @@ import {
   getWorkspaceById,
   deleteWorkspace as deleteWorkspaceDB,
 } from "../models/workspaces.model";
-import {
-  CreateSeasonForWorkspaceRequest,
-  CreateWorkspaceRequest,
-  DeleteWorkspaceRequest,
-  GetWorkspacesSeasonsRequest,
-  UpdateWorkspaceRequest,
-  UpdateWorkspaceResponse,
-  WorkspaceResponse,
-  WorkspacesExtendSeasonsFieldsResponse,
-  WorkspacesExtendSeasonsResponse,
-  WorkspacesResponse,
-} from "../types/workspaces";
 import { createSeason, getSeasonsByWorkspaceId } from "../models/seasons.model";
-import { SeasonResponse, SeasonsResponse } from "../types/seasons";
 import { isUserAllowedToAccessWorkspace } from "./utils.controller";
+import {
+  CreateWorkspaceRequest,
+  CreateWorkspaceSeasonRequest,
+  DeleteWorkspaceRequest,
+  GetWorkspaceSeasonsRequest,
+  UpdateWorkspaceRequest,
+} from "../types/requests";
+import {
+  CreateWorkspaceResponse,
+  CreateWorkspaceSeasonResponse,
+  GetWorkspaceSeasonsResponse,
+  GetWorkspacesResponse,
+  UpdateWorkspaceResponse,
+} from "../types/responses";
 
-export const getWorkspaces = async (req: Request, res: WorkspacesResponse) => {
+export const getWorkspaces = async (
+  req: Request,
+  res: GetWorkspacesResponse
+) => {
   const { businessUserId } = req.user;
   const workspaces = await getWorkspacesByOwnerId(businessUserId);
   res.status(200).json(workspaces);
 };
 
-export const getWorkspacesWithSeasons = async (
-  req: Request,
-  res: WorkspacesExtendSeasonsResponse,
-  next: NextFunction
-) => {
-  try {
-    const { businessUserId } = req.user;
-    const workspaces = await getWorkspacesWithSeasonsByOwnerId(businessUserId);
-    res.status(200).json(workspaces);
-  } catch (error) {
-    next(error);
-  }
-};
+// export const getWorkspacesWithSeasons = async (
+//   req: Request,
+//   res: WorkspacesExtendSeasonsResponse,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { businessUserId } = req.user;
+//     const workspaces = await getWorkspacesWithSeasonsByOwnerId(businessUserId);
+//     res.status(200).json(workspaces);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 // export const getWorkspacesWithSeasonsWithFields = async (
 //   req: Request,
@@ -85,7 +89,7 @@ export const getWorkspacesWithSeasons = async (
 
 export const createWorkspace = async (
   req: CreateWorkspaceRequest,
-  res: WorkspaceResponse,
+  res: CreateWorkspaceResponse,
   next: NextFunction
 ) => {
   try {
@@ -144,9 +148,9 @@ export const deleteWorkspace = async (
   }
 };
 
-export const createSeasonForWorkspace = async (
-  req: CreateSeasonForWorkspaceRequest,
-  res: SeasonResponse,
+export const createWorkspaceSeason = async (
+  req: CreateWorkspaceSeasonRequest,
+  res: CreateWorkspaceSeasonResponse,
   next: NextFunction
 ) => {
   try {
@@ -171,9 +175,9 @@ export const createSeasonForWorkspace = async (
   }
 };
 
-export const getWorkspacesSeasons = async (
-  req: GetWorkspacesSeasonsRequest,
-  res: SeasonsResponse,
+export const getWorkspaceSeasons = async (
+  req: GetWorkspaceSeasonsRequest,
+  res: GetWorkspaceSeasonsResponse,
   next: NextFunction
 ) => {
   try {

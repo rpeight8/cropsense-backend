@@ -3,12 +3,18 @@ import prisma from "../modules/db";
 import { comparePassword, generateToken, verifyToken } from "../modules/auth";
 import { getUserByEmail } from "../models/users.model";
 import { registerNewUser } from "../services/signUpService";
-import { signInRequest, signInResponse, signUpRequest } from "../types/auth";
 import { getBusinessUser } from "../models/businessUsers.model";
+import { SignInRequest, SignUpRequest } from "../types/requests";
+import {
+  SignInResponse,
+  SignOutResponse,
+  SignUpResponse,
+  VerifyResponse,
+} from "../types/responses";
 
 export const verify = async (
   req: Request,
-  res: Response,
+  res: VerifyResponse,
   next: NextFunction
 ) => {
   let token = req.cookies?.token;
@@ -19,14 +25,14 @@ export const verify = async (
 
   try {
     const decoded = verifyToken(token);
-    res.status(200).json(decoded);
+    res.status(200).json({ message: JSON.stringify(decoded) });
   } catch (err) {
     res.status(401).json({ message: "Unauthorized" });
     next(err);
   }
 };
 
-export const signIn = async (req: signInRequest, res: signInResponse) => {
+export const signIn = async (req: SignInRequest, res: SignInResponse) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -74,7 +80,7 @@ export const signIn = async (req: signInRequest, res: signInResponse) => {
   res.end();
 };
 
-export const signUp = async (req: signUpRequest, res: Response) => {
+export const signUp = async (req: SignUpRequest, res: SignUpResponse) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -97,8 +103,8 @@ export const signUp = async (req: signUpRequest, res: Response) => {
   }
 };
 
-export const signout = async (req: Request, res: Response) => {
+export const signOut = async (req: Request, res: SignOutResponse) => {
   res.clearCookie("token");
-  res.json({ message: "Logout successful" });
-  res.end();
+
+  res.status(200).json({ message: "Logout successful" });
 };
