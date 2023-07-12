@@ -1,5 +1,5 @@
-import { PublicUserSchema } from "./schemas/auth";
 import { z } from "zod";
+import { PublicUserSchema } from "./schemas/utils";
 
 export type PublicUser = z.TypeOf<typeof PublicUserSchema>;
 

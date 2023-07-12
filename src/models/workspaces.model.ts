@@ -90,42 +90,42 @@ export const getWorkspacesWithSeasonsByOwnerId = async (
   return workspaces;
 };
 
-export const getWorkspacesWithSeasonsWithFieldsByOwnerId = async (
-  businessUserId: string
-) => {
-  const workspaces = await prisma.workspace.findMany({
-    where: {
-      ownerId: businessUserId,
-    },
-    select: {
-      id: true,
-      name: true,
-      seasons: {
-        select: {
-          id: true,
-          name: true,
-          startDate: true,
-          endDate: true,
-          fields: {
-            select: {
-              id: true,
-              name: true,
-              geometryType: true,
-              coordinates: true,
-              seasonId: true,
-              crop: {
-                select: {
-                  id: true,
-                  name: true,
-                  color: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+// export const getWorkspacesWithSeasonsWithFieldsByOwnerId = async (
+//   businessUserId: string
+// ) => {
+//   const workspaces = await prisma.workspace.findMany({
+//     where: {
+//       ownerId: businessUserId,
+//     },
+//     select: {
+//       id: true,
+//       name: true,
+//       seasons: {
+//         select: {
+//           id: true,
+//           name: true,
+//           startDate: true,
+//           endDate: true,
+//           fields: {
+//             select: {
+//               id: true,
+//               name: true,
+//               geometryType: true,
+//               coordinates: true,
+//               seasonId: true,
+//               crop: {
+//                 select: {
+//                   id: true,
+//                   name: true,
+//                   color: true,
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   });
 
-  return workspaces;
-};
+//   return workspaces;
+// };
