@@ -2,9 +2,12 @@ import { Router } from "express";
 import { protect } from "../middlewares/protect";
 import {
   validateDeleteBusinessField,
-  validateGetBusinessFieldSummary,
   validateUpdateBusinessField,
 } from "../middlewares/requestsValidators/businessFields";
+import {
+  deleteBusinessField,
+  updateBusinessField,
+} from "../controllers/businessFields.controller";
 
 const router = Router();
 
@@ -20,12 +23,12 @@ router.delete(
   validateDeleteBusinessField,
   deleteBusinessField
 );
-router.get(
-  "/fields/:id/summary",
-  protect,
-  validateGetBusinessFieldSummary,
-  getBusinessFieldSummary
-);
+// router.get(
+//   "/fields/:id/summary",
+//   protect,
+//   validateGetBusinessFieldSummary,
+//   getBusinessFieldSummary
+// );
 // router.get(
 //   "/fields/:id/weather-current",
 //   protect,

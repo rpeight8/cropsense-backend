@@ -33,16 +33,16 @@ export const validateDeleteBusinessField = async (
   }
 };
 
-export const validateGetBusinessFieldSummary = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    await validateGetBusinessFieldSummaryRequestSchema.parseAsync(req);
-    next();
-  } catch (error) {
-    res.status(400);
-    next(error);
-  }
-};
+// export const validateGetBusinessFieldSummary = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     await validateGetBusinessFieldSummaryRequestSchema.parseAsync(req);
+//     next();
+//   } catch (error) {
+//     res.status(400);
+//     next(error);
+//   }
+// };

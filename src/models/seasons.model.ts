@@ -1,30 +1,11 @@
 import prisma from "../modules/db";
+import { Prisma } from "@prisma/client";
 import { DateTime } from "luxon";
 
-// TODO: Pass startDate and endDate as parameters
-export const createSeason = async (
-  workspaceId: string,
-  businessUserId: string,
-  season: Pick<
-    Parameters<typeof prisma.season.create>[0]["data"],
-    "name" | "startDate" | "endDate"
-  >
-) => {
+export const createSeason = async (season: Prisma.SeasonCreateInput) => {
   const newSeason = await prisma.season.create({
     data: {
-      name: season.name,
-      startDate: season.startDate,
-      endDate: season.endDate,
-      workspace: {
-        connect: {
-          id: workspaceId,
-        },
-      },
-      createdBy: {
-        connect: {
-          id: businessUserId,
-        },
-      },
+      ...season,
     },
   });
 
@@ -33,26 +14,14 @@ export const createSeason = async (
 
 export const updateSeason = async (
   id: string,
-  businessUserId: string,
-  season: Pick<
-    Parameters<typeof prisma.season.update>[0]["data"],
-    "name" | "startDate" | "endDate"
-  >
+  season: Prisma.SeasonUpdateInput
 ) => {
   const updatedSeason = await prisma.season.update({
     where: {
       id,
     },
     data: {
-      name: season.name,
-      startDate: season.startDate,
-      endDate: season.endDate,
-      updatedBy: {
-        connect: {
-          id: businessUserId,
-        },
-      },
-      updatedAt: new Date(),
+      ...season,
     },
   });
 
@@ -79,10 +48,10 @@ export const getSeasonById = async (seasonId: string) => {
   return season;
 };
 
-export const getSeasonsByWorkspaceId = async (workspaceId: string) => {
+export const getSeasonsByWorkspaceId = async (id: string) => {
   const seasons = await prisma.season.findMany({
     where: {
-      workspaceId,
+      workspaceId: id,
     },
   });
 

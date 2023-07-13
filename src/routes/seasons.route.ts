@@ -1,10 +1,4 @@
 import { Router } from "express";
-import {
-  createFieldForSeason,
-  deleteSeason,
-  getSeasonFields,
-  updateSeason,
-} from "../controllers/seasons.controller";
 import { protect } from "../middlewares/protect";
 import {
   validateCreateSeasonBusinessField,
@@ -12,6 +6,12 @@ import {
   validateGetSeasonBusinessFields,
   validateUpdateSeason,
 } from "../middlewares/requestsValidators/seasons";
+import {
+  createSeasonBusinessField,
+  deleteSeason,
+  getSeasonBusinessFields,
+  updateSeason,
+} from "../controllers/seasons.controller";
 
 const router = Router();
 

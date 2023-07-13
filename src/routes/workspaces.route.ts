@@ -2,7 +2,9 @@ import { Router } from "express";
 import { protect } from "../middlewares/protect";
 import {
   createWorkspace,
+  createWorkspaceSeason,
   deleteWorkspace,
+  getWorkspaceSeasons,
   getWorkspaces,
   updateWorkspace,
 } from "../controllers/workspaces.controller";
@@ -10,6 +12,7 @@ import {
   validateCreateWorkspace,
   validateCreateWorkspaceSeason,
   validateDeleteWorkspace,
+  validateGetWorkspaceSeasons,
   validateUpdateWorkspace,
 } from "../middlewares/requestsValidators/workspace";
 
@@ -22,12 +25,13 @@ router.get("/workspaces", protect, getWorkspaces);
 //   protect,
 //   getWorkspacesWithSeasonsWithFields
 // );
-// router.get(
-//   "/workspaces/:id/seasons",
-//   protect,
-//   validateWorkspacesSeasons,
-//   getWorkspacesSeasons
-// );
+
+router.get(
+  "/workspaces/:id/seasons",
+  protect,
+  validateGetWorkspaceSeasons,
+  getWorkspaceSeasons
+);
 
 router.post(
   "/workspaces/:id/seasons",

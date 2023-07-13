@@ -1,33 +1,18 @@
 import { NextFunction, Response } from "express";
-import { isUserAllowedToAccessField } from "./utils.controller";
+import {
+  isUserAllowedToAccessField,
+  prepareBusinessFieldForResponse,
+} from "./utils";
 import {
   DeleteBusinessFieldRequest,
   UpdateBusinessFieldRequest,
 } from "../types/requests";
-import { updateBusinessField as updateBusinessFieldDB } from "../models/businessFields.model";
+import {
+  updateBusinessField as updateBusinessFieldDB,
+  deleteBusinessField as deleteBusinessFieldDB,
+} from "../models/businessFields.model";
 
 import { UpdateBusinessFieldResponse } from "../types/responses";
-
-export const prepareBusinessFieldForUpdateResponse = (
-  field: Awaited<ReturnType<typeof updateFieldDB>>
-) => {
-  return {
-    id: field.id,
-    name: field.name,
-    seasonId: field.seasonId,
-    geometry: {
-      type: field.geometryType,
-      coordinates: field.coordinates,
-    },
-    crop:
-      (field.crop && {
-        id: field.crop.id,
-        name: field.crop.name,
-        color: field.crop.color,
-      }) ||
-      null,
-  };
-};
 
 export const updateBusinessField = async (
   req: UpdateBusinessFieldRequest,
@@ -50,7 +35,7 @@ export const updateBusinessField = async (
       name: field.name,
     });
 
-    res.status(200).json(prepareFieldForUpdateResponse(updatedField));
+    res.status(200).json(prepareBusinessFieldForResponse(updatedField));
   } catch (error) {
     next(error);
   }

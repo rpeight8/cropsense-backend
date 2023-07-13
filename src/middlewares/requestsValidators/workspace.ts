@@ -62,7 +62,7 @@ export const validateCreateWorkspaceSeason = async (
   }
 };
 
-export const validateWorkspacesSeasons = async (
+export const validateGetWorkspaceSeasons = async (
   req: Request,
   res: Response,
   next: NextFunction
