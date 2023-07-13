@@ -17,14 +17,14 @@ export const getBusinessFieldsBySeasonId = async (id: string) => {
       businessFields: {
         include: {
           cropRotations: {
-            where: {
-              startDate: {
-                lte: new Date(),
-              },
-              endDate: {
-                gte: new Date(),
-              },
-            },
+            // where: {
+            //   startDate: {
+            //     lte: new Date(),
+            //   },
+            //   endDate: {
+            //     gte: new Date(),
+            //   },
+            // },
             include: {
               crop: true,
             },
@@ -93,4 +93,27 @@ export const deleteBusinessField = async (id: string) => {
     },
   });
   return deletedBusinessField;
-}
+};
+
+export const getBusinessFieldSiblings = async (id: string) => {
+  const bussinesField = await prisma.businessField.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!bussinesField) {
+    return [];
+  }
+
+  const businessFieldSiblings = await prisma.businessField.findMany({
+    where: {
+      fieldId: bussinesField.fieldId,
+      id: {
+        not: id,
+      },
+    },
+  });
+
+  return businessFieldSiblings;
+};

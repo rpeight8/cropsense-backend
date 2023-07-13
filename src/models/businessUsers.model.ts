@@ -29,3 +29,13 @@ export const getBusinessUser = async (userId: string, email: string) => {
 
   return businessUser;
 };
+
+export const getBusinessUserById = async (id: string) => {
+  const businessUser = await prisma.businessUser.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return businessUser;
+};

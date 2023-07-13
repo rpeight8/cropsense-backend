@@ -31,7 +31,7 @@ export const registerNewUser = async (email: string, password: string) => {
       },
       createdBy: {
         connect: {
-          id: newUser.id,
+          id: newBussinesUser.id,
         },
       },
     };

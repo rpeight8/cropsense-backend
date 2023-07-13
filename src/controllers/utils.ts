@@ -7,7 +7,7 @@ import {
 import { getSeasonById } from "../models/seasons.model";
 import { getWorkspaceById } from "../models/workspaces.model";
 
-export const isUserAllowedToAccessField = async (
+export const isUserAllowedToAccessBusinessField = async (
   businessUserId: string,
   bussinessFieldId: string
 ) => {
@@ -78,12 +78,14 @@ export const prepareBusinessFieldForResponse = (
       type: field.geometryType,
       coordinates: field.geometry,
     },
-    crop: crop && {
-      id: crop.id,
-      name: crop.name,
-      color: crop.color,
-      startDate: cropRotation.startDate,
-      endDate: cropRotation.endDate,
-    },
+    crop:
+      (crop && {
+        id: crop.id,
+        name: crop.name,
+        color: crop.color,
+        startDate: cropRotation.startDate,
+        endDate: cropRotation.endDate,
+      }) ||
+      null,
   };
 };

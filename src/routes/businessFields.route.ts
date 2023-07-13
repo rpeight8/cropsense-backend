@@ -12,7 +12,7 @@ import {
 const router = Router();
 
 router.put(
-  "/businessFields/:id",
+  "/fields/:id",
   protect,
   validateUpdateBusinessField,
   updateBusinessField

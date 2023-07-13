@@ -37,3 +37,10 @@ export const BusinessFieldResponseSchema = z.object({
 export const BusinessFieldsResponseSchema = z.array(
   BusinessFieldResponseSchema
 );
+
+export const CropResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  color: z.string(),
+});
+export const CropsResponseSchema = z.array(CropResponseSchema);

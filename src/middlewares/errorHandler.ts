@@ -6,7 +6,6 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Error handler", err);
   const statusCode = (res.statusCode !== 200 && res.statusCode) || 500;
   res.status(statusCode);
 
