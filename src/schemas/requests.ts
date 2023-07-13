@@ -103,6 +103,8 @@ export const CreateSeasonBusinessFieldRequestBodySchema = z.object({
   crop: z
     .object({
       id: z.string(),
+      startDate: SeasonStartDateSchema,
+      endDate: SeasonEndDateSchema,
     })
     .nullable(),
 });

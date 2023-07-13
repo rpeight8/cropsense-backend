@@ -1,6 +1,7 @@
 import prisma from "../modules/db";
+import { Prisma } from "@prisma/client";
 
-export const getBusinessField = async (id: string) => {
+export const getBusinessFieldById = async (id: string) => {
   const businessField = await prisma.businessField.findUnique({
     where: {
       id,
@@ -10,21 +11,57 @@ export const getBusinessField = async (id: string) => {
 };
 
 export const getBusinessFieldsBySeasonId = async (id: string) => {
-  const businessFields = await prisma.businessField.findMany({
-    where: {
-      seasonId: id,
+  const businessFieldsWithCropBySeasonId = await prisma.season.findUnique({
+    where: { id },
+    include: {
+      businessFields: {
+        include: {
+          cropRotations: {
+            where: {
+              startDate: {
+                lte: new Date(),
+              },
+              endDate: {
+                gte: new Date(),
+              },
+            },
+            include: {
+              crop: true,
+            },
+          },
+        },
+      },
     },
   });
+
+  const businessFields = businessFieldsWithCropBySeasonId?.businessFields ?? [];
+
   return businessFields;
+};
+
+export const createBusinessField = async (
+  businessField: Prisma.BusinessFieldCreateInput
+) => {
+  const newBusinessField = await prisma.businessField.create({
+    data: {
+      ...businessField,
+    },
+    include: {
+      cropRotations: {
+        include: {
+          crop: true,
+        },
+      },
+    },
+  });
+
+  return newBusinessField;
 };
 
 export const updateBusinessField = async (
   id: string,
   businessUserId: string,
-  businessField: Pick<
-    Parameters<typeof prisma.businessField.update>[0]["data"],
-    "seasonId" | "name" | "geometry" | "geometryType"
-  >
+  businessField: Prisma.BusinessFieldUpdateInput
 ) => {
   const updatedBusinessField = await prisma.businessField.update({
     where: {
@@ -32,8 +69,28 @@ export const updateBusinessField = async (
     },
     data: {
       ...businessField,
-      updatedAt: new Date(),
+      updatedBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+    },
+    include: {
+      cropRotations: {
+        include: {
+          crop: true,
+        },
+      },
     },
   });
   return updatedBusinessField;
 };
+
+export const deleteBusinessField = async (id: string) => {
+  const deletedBusinessField = await prisma.businessField.delete({
+    where: {
+      id,
+    },
+  });
+  return deletedBusinessField;
+}

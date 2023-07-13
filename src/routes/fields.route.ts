@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { deleteField, updateField } from "../controllers/fields.controller";
 import { protect } from "../middlewares/protect";
 // import {
 //   validateDeleteField,

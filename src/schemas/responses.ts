@@ -29,6 +29,8 @@ export const BusinessFieldResponseSchema = z.object({
       id: z.string(),
       name: z.string(),
       color: z.string(),
+      startDate: z.date(),
+      endDate: z.date(),
     })
     .nullable(),
 });
