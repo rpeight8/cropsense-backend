@@ -1,6 +1,6 @@
 import { NextFunction, Response } from "express";
 import {
-  isUserAllowedToAccessField,
+  isUserAllowedToAccessBusinessField,
   prepareBusinessFieldForResponse,
 } from "./utils";
 import {
@@ -10,9 +10,12 @@ import {
 import {
   updateBusinessField as updateBusinessFieldDB,
   deleteBusinessField as deleteBusinessFieldDB,
+  getBusinessFieldSiblings,
+  getBusinessFieldById,
 } from "../models/businessFields.model";
 
 import { UpdateBusinessFieldResponse } from "../types/responses";
+import { deleteField, getFieldById } from "../models/fields.model";
 
 export const updateBusinessField = async (
   req: UpdateBusinessFieldRequest,
@@ -24,7 +27,7 @@ export const updateBusinessField = async (
     const { businessUserId } = req.user;
     const field = req.body;
 
-    if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
+    if (!isUserAllowedToAccessBusinessField(businessUserId, fieldId)) {
       res.status(403);
       throw new Error("User is not allowed to access this field");
     }
@@ -47,15 +50,29 @@ export const deleteBusinessField = async (
   next: NextFunction
 ) => {
   try {
-    const { id: fieldId } = req.params;
+    const { id: businessFieldId } = req.params;
     const { businessUserId } = req.user;
 
-    if (!isUserAllowedToAccessField(businessUserId, fieldId)) {
+    if (!isUserAllowedToAccessBusinessField(businessUserId, businessFieldId)) {
       res.status(403);
       throw new Error("User is not allowed to access this field");
     }
 
-    await deleteBusinessFieldDB(fieldId);
+    const siblings = await getBusinessFieldSiblings(businessFieldId);
+
+    if (siblings.length > 0) {
+      await deleteBusinessFieldDB(businessFieldId);
+    } else {
+      // Deletition of field is cascaded to businessField
+      const bussinesFieldForDeletion = await getBusinessFieldById(
+        businessFieldId
+      );
+      if (!bussinesFieldForDeletion) {
+        res.status(404);
+        throw new Error("Business field not found");
+      }
+      await deleteField(bussinesFieldForDeletion.fieldId);
+    }
 
     res.status(204).end();
   } catch (error) {

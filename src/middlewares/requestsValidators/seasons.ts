@@ -26,7 +26,8 @@ export const validateGetSeasonBusinessFields = async (
   next: NextFunction
 ) => {
   try {
-    await GetSeasonBusinessFieldsRequestSchema.parseAsync(req.params);
+    // console.log()
+    await GetSeasonBusinessFieldsRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);

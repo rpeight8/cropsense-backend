@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import { PublicUser } from "../types";
+import { PublicUserSchema } from "../schemas/utils";
 
 export const comparePassword = (password: string, hashedPassword: string) => {
   return bcrypt.compare(password, hashedPassword);
@@ -24,5 +25,6 @@ export const verifyToken = (token: string) => {
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET not found");
   }
-  return jwt.verify(token, process.env.JWT_SECRET);
+
+  return PublicUserSchema.parse(jwt.verify(token, process.env.JWT_SECRET));
 };

@@ -3,7 +3,10 @@ import prisma from "../modules/db";
 import { comparePassword, generateToken, verifyToken } from "../modules/auth";
 import { getUserByEmail } from "../models/users.model";
 import { registerNewUser } from "../services/signUpService";
-import { getBusinessUser } from "../models/businessUsers.model";
+import {
+  getBusinessUser,
+  getBusinessUserById,
+} from "../models/businessUsers.model";
 import { SignInRequest, SignUpRequest } from "../types/requests";
 import {
   SignInResponse,
@@ -24,8 +27,14 @@ export const verify = async (
   }
 
   try {
-    const decoded = verifyToken(token);
-    res.status(200).json({ message: JSON.stringify(decoded) });
+    const user = verifyToken(token);
+    const bussinesUser = await getBusinessUserById(user.businessUserId);
+    console.log(bussinesUser);
+    if (!bussinesUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    res.status(200).json(user);
   } catch (err) {
     res.status(401).json({ message: "Unauthorized" });
     next(err);
@@ -98,7 +107,8 @@ export const signUp = async (req: SignUpRequest, res: SignUpResponse) => {
     res.status(201).json({ message: "User created" });
     res.end();
   } catch (err) {
-    res.status(400).json({ message: "Email already exists" });
+    console.log(err);
+    res.status(400).json({ message: "An error occured while creating user" });
     res.end();
   }
 };
