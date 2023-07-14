@@ -9,7 +9,6 @@ import {
   deleteWorkspace as deleteWorkspaceDB,
 } from "../models/workspaces.model";
 import { createSeason, getSeasonsByWorkspaceId } from "../models/seasons.model";
-import { isUserAllowedToAccessWorkspace } from "./utils";
 import {
   CreateWorkspaceRequest,
   CreateWorkspaceSeasonRequest,
@@ -78,11 +77,6 @@ export const updateWorkspace = async (
     const { id: workspaceId } = req.params;
     const reqWorkspace = req.body;
 
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
-
     const workspace = {
       name: reqWorkspace.name,
       updatedBy: {
@@ -113,11 +107,6 @@ export const deleteWorkspace = async (
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
 
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
-
     await deleteWorkspaceDB({
       where: {
         id: workspaceId,
@@ -138,11 +127,6 @@ export const createWorkspaceSeason = async (
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
     const reqSeason = req.body;
-
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
 
     const season = {
       name: reqSeason.name,
@@ -178,11 +162,6 @@ export const getWorkspaceSeasons = async (
   try {
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
-
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
 
     const seasons = await getSeasonsByWorkspaceId(workspaceId);
 

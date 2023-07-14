@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { protect } from "../middlewares/protect";
+import { protect } from "../middlewares/protect.middleware";
 import {
   validateDeleteBusinessField,
   validateUpdateBusinessField,
@@ -9,31 +9,23 @@ import {
   updateBusinessField,
 } from "../controllers/businessFields.controller";
 
+import { validateBusinessFieldAccess } from "../middlewares/entityAccess.middleware";
+
 const router = Router();
 
 router.put(
   "/fields/:id",
   protect,
   validateUpdateBusinessField,
+  validateBusinessFieldAccess,
   updateBusinessField
 );
 router.delete(
   "/fields/:id",
   protect,
   validateDeleteBusinessField,
+  validateBusinessFieldAccess,
   deleteBusinessField
 );
-// router.get(
-//   "/fields/:id/summary",
-//   protect,
-//   validateGetBusinessFieldSummary,
-//   getBusinessFieldSummary
-// );
-// router.get(
-//   "/fields/:id/weather-current",
-//   protect,
-//   validateGetFieldWeather,
-//   getFieldWeather
-// );
 
 export default router;

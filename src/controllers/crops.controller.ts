@@ -1,5 +1,5 @@
 import { NextFunction } from "express";
-import { ProtectedRequest } from "../middlewares/protect";
+import { ProtectedRequest } from "../middlewares/protect.middleware";
 import { getCrops as getCropsDB } from "../models/crops.model";
 import { GetCropsResponse } from "../types/responses";
 

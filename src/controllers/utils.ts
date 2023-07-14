@@ -5,58 +5,7 @@ import { getWorkspaceById } from "../models/workspaces.model";
 import { BusinessFieldResponseSchema } from "../schemas/responses";
 import { z } from "zod";
 
-export const isUserAllowedToAccessBusinessField = async (
-  businessUserId: string,
-  bussinessFieldId: string
-) => {
-  const field = await getBusinessFieldById(bussinessFieldId);
 
-  if (!field) {
-    return false;
-  }
-
-  const isSeasonAllowed = await isUserAllowedToAccessSeason(
-    businessUserId,
-    field.seasonId
-  );
-
-  return isSeasonAllowed;
-};
-
-export const isUserAllowedToAccessSeason = async (
-  businessUserId: string,
-  seasonId: string
-) => {
-  const season = await getSeasonById(seasonId);
-
-  if (!season) {
-    return false;
-  }
-
-  const isWorkspaceAllowed = await isUserAllowedToAccessWorkspace(
-    businessUserId,
-    season.workspaceId
-  );
-
-  return isWorkspaceAllowed;
-};
-
-export const isUserAllowedToAccessWorkspace = async (
-  businessUserId: string,
-  workspaceId: string
-) => {
-  const workspace = await getWorkspaceById(workspaceId);
-
-  if (!workspace) {
-    return false;
-  }
-
-  if (workspace.ownerId !== businessUserId) {
-    return false;
-  }
-
-  return true;
-};
 
 export const businessFieldDefaultSelect = Prisma.validator<Prisma.BusinessFieldArgs>()({
   select: {

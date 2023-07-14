@@ -1,9 +1,9 @@
 import express from "express";
 import router from "./router";
 import cors from "cors";
-import logger from "./middlewares/logger";
+import logger from "./middlewares/logger.middleware";
 import cookieParser from "cookie-parser";
-import errorHandler from "./middlewares/errorHandler";
+import errorHandler from "./middlewares/errorHandler.middleware";
 
 const environment = process.env.NODE_ENV || "development";
 

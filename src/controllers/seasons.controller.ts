@@ -7,7 +7,6 @@ import {
 
 import {
   businessFieldDefaultSelect,
-  isUserAllowedToAccessSeason,
   prepareBusinessFieldForResponse,
 } from "./utils";
 import {
@@ -35,11 +34,6 @@ export const createSeasonBusinessField = async (
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
     const reqBusinessField = req.body;
-
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
 
     const newBusinessField = {
       name: reqBusinessField.name,
@@ -102,11 +96,6 @@ export const getSeasonBusinessFields = async (
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
 
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
-
     const fields = await getBusinessFieldsBySeasonId(seasonId);
 
     const preparedFields = fields.map(prepareBusinessFieldForResponse);
@@ -126,11 +115,6 @@ export const updateSeason = async (
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
     const reqSeason = req.body;
-
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
 
     const season = {
       name: reqSeason.name,
@@ -164,11 +148,6 @@ export const deleteSeason = async (
   try {
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
-
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
 
     await deleteSeasonDB({
       where: {

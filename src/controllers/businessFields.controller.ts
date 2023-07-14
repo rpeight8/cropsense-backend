@@ -1,7 +1,6 @@
 import { NextFunction, Response } from "express";
 import {
   businessFieldDefaultSelect,
-  isUserAllowedToAccessBusinessField,
   prepareBusinessFieldForResponse,
 } from "./utils";
 import {
@@ -16,16 +15,14 @@ import {
 } from "../models/businessFields.model";
 
 import { UpdateBusinessFieldResponse } from "../types/responses";
-import { deleteField, getFieldById } from "../models/fields.model";
+import { deleteField } from "../models/fields.model";
 import prisma from "../modules/db";
 import {
   createCropRotation,
-  createCropRotations,
   deleteCropRotations,
   getCropRotations,
   updateCropRotation,
 } from "../models/cropRotations.model";
-import { Prisma } from "@prisma/client";
 
 export const updateBusinessField = async (
   req: UpdateBusinessFieldRequest,
@@ -37,9 +34,11 @@ export const updateBusinessField = async (
     const { businessUserId } = req.user;
     const reqField = req.body;
 
-    if (!isUserAllowedToAccessBusinessField(businessUserId, fieldId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this field");
+    if (reqField.cropRotations.length > 5) {
+      res.status(400);
+      throw new Error(
+        "Maximum number of crop rotations for particular field is 5"
+      );
     }
 
     const existingCropRotations = await getCropRotations({
@@ -73,48 +72,52 @@ export const updateBusinessField = async (
     );
 
     const updatedBusinessField = await prisma.$transaction(async () => {
-      await Promise.all(
-        cropRotationsToCreate.map(async (cropRotation) => {
-          // TODO: double check is it possible to do it using batching craeteMany
-          return await createCropRotation({
-            data: {
-              crop: {
-                connect: {
-                  id: cropRotation.cropId,
+      if (cropRotationsToCreate.length > 0) {
+        await Promise.all(
+          cropRotationsToCreate.map(async (cropRotation) => {
+            // TODO: double check is it possible to do it using batching craeteMany
+            return await createCropRotation({
+              data: {
+                crop: {
+                  connect: {
+                    id: cropRotation.cropId,
+                  },
                 },
-              },
-              businessField: {
-                connect: {
-                  id: fieldId,
+                businessField: {
+                  connect: {
+                    id: fieldId,
+                  },
                 },
-              },
-              createdBy: {
-                connect: {
-                  id: businessUserId,
+                createdBy: {
+                  connect: {
+                    id: businessUserId,
+                  },
                 },
+                startDate: cropRotation.startDate,
+                endDate: cropRotation.endDate,
               },
-              startDate: cropRotation.startDate,
-              endDate: cropRotation.endDate,
-            },
-          });
-        })
-      );
+            });
+          })
+        );
+      }
 
-      await Promise.all(
-        cropRotationsToUpdate.map(async (cropRotation) => {
-          return await updateCropRotation(cropRotation.id, {
-            data: {
-              crop: {
-                connect: {
-                  id: cropRotation.cropId,
+      if (cropRotationsToUpdate.length > 0) {
+        await Promise.all(
+          cropRotationsToUpdate.map(async (cropRotation) => {
+            return await updateCropRotation(cropRotation.id, {
+              data: {
+                crop: {
+                  connect: {
+                    id: cropRotation.cropId,
+                  },
                 },
+                startDate: cropRotation.startDate,
+                endDate: cropRotation.endDate,
               },
-              startDate: cropRotation.startDate,
-              endDate: cropRotation.endDate,
-            },
-          });
-        })
-      );
+            });
+          })
+        );
+      }
 
       if (cropRotationsToDelete.length > 0) {
         await deleteCropRotations({
@@ -160,12 +163,6 @@ export const deleteBusinessField = async (
 ) => {
   try {
     const { id: businessFieldId } = req.params;
-    const { businessUserId } = req.user;
-
-    if (!isUserAllowedToAccessBusinessField(businessUserId, businessFieldId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this field");
-    }
 
     const siblings = await getBusinessFieldSiblings(businessFieldId);
 
