@@ -1,19 +1,12 @@
 import prisma from "../modules/db";
+import { Prisma } from "@prisma/client";
 
 export const createBusinessUser = async (
-  userId: string,
-  email: string,
-  name: string
+  businessUser: Prisma.BusinessUserCreateInput
 ) => {
   const newBusinessUser = await prisma.businessUser.create({
     data: {
-      user: {
-        connect: {
-          id: userId,
-        },
-      },
-      email,
-      name,
+      ...businessUser,
     },
   });
   return newBusinessUser;

@@ -4,40 +4,56 @@ import prisma from "../modules/db";
 import { createWorkspace } from "../models/workspaces.model";
 import { createSeason } from "../models/seasons.model";
 import { Prisma } from "@prisma/client";
+import { hashPassword } from "../modules/auth";
 
 export const registerNewUser = async (email: string, password: string) => {
   return await prisma.$transaction(async () => {
-    const newUser = await createUser(email, password);
-    const newBussinesUser = await createBusinessUser(newUser.id, email, "");
-
-    const season: Prisma.SeasonCreateInput = {
-      name: "My first season",
-      startDate: new Date(),
-      endDate: new Date(),
-      workspace: {
+    const user: Prisma.UserCreateInput = {
+      email,
+      password: await hashPassword(password),
+      businessUsers: {
         create: {
-          name: "My first workspace",
-          owner: {
-            connect: {
-              id: newBussinesUser.id,
-            },
-          },
-          createdBy: {
-            connect: {
-              id: newBussinesUser.id,
-            },
-          },
-        },
-      },
-      createdBy: {
-        connect: {
-          id: newBussinesUser.id,
+          email,
+          name: "User :)",
         },
       },
     };
 
-    await createSeason(season);
+    const createdUser = await createUser(user);
+    const businessUserId = createdUser.businessUsers[0].id;
 
-    return { newUser, newBussinesUser };
+    const workspace = {
+      name: "My first workspace",
+      seasons: {
+        create: [
+          {
+            name: "My first season",
+            startDate: new Date(),
+            endDate: new Date(),
+            createdBy: {
+              connect: {
+                id: businessUserId,
+              },
+            },
+          },
+        ],
+      },
+      owner: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+      createdBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+    };
+
+    await createWorkspace({
+      data: workspace,
+    });
+
+    return { createdUser };
   });
 };

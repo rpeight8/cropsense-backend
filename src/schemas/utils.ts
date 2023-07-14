@@ -31,6 +31,20 @@ export const SeasonEndDateSchema = z.string().refine(isValidUTCDateString, {
   path: ["endDate"],
 });
 
+export const CropRotationStartDateSchema = z
+  .string()
+  .refine(isValidUTCDateString, {
+    message: "Invalid startDate format. Expected a valid UTC date string.",
+    path: ["cropRotation", "startDate"],
+  });
+
+export const CropRotationEndDateSchema = z
+  .string()
+  .refine(isValidUTCDateString, {
+    message: "Invalid endDate format. Expected a valid UTC date string.",
+    path: ["cropRotation", "endDate"],
+  });
+
 export const BusinessFieldPolygonSchema = z.array(CoordinatesSchema);
 export const BusinessFieldHoleSchema = z.array(CoordinatesSchema);
 

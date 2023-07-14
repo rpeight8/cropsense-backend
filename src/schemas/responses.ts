@@ -16,6 +16,13 @@ export const SeasonResponseSchema = z.object({
 });
 export const SeasonsResponseSchema = z.array(SeasonResponseSchema);
 
+export const CropResponseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  color: z.string(),
+});
+export const CropsResponseSchema = z.array(CropResponseSchema);
+
 export const BusinessFieldResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -24,23 +31,15 @@ export const BusinessFieldResponseSchema = z.object({
     coordinates: z.any(),
   }),
   seasonId: z.string(),
-  crop: z
-    .object({
+  cropRotations: z.array(
+    z.object({
       id: z.string(),
-      name: z.string(),
-      color: z.string(),
+      crop: CropResponseSchema,
       startDate: z.date(),
       endDate: z.date(),
     })
-    .nullable(),
+  ),
 });
 export const BusinessFieldsResponseSchema = z.array(
   BusinessFieldResponseSchema
 );
-
-export const CropResponseSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  color: z.string(),
-});
-export const CropsResponseSchema = z.array(CropResponseSchema);

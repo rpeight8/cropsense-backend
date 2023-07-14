@@ -1,12 +1,20 @@
 import { hashPassword } from "../modules/auth";
 import prisma from "../modules/db";
+import { Prisma } from "@prisma/client";
 import { createBusinessUser } from "./businessUsers.model";
 
-export const createUser = async (email: string, password: string) => {
+export const createUser = async (user: Prisma.UserCreateInput) => {
   const newUser = await prisma.user.create({
     data: {
-      email,
-      password: await hashPassword(password),
+      ...user,
+    },
+    select: {
+      id: true,
+      businessUsers: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 

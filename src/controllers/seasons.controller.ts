@@ -6,6 +6,7 @@ import {
 } from "../models/seasons.model";
 
 import {
+  businessFieldDefaultSelect,
   isUserAllowedToAccessSeason,
   prepareBusinessFieldForResponse,
 } from "./utils";
@@ -40,7 +41,7 @@ export const createSeasonBusinessField = async (
       throw new Error("User is not allowed to access this season");
     }
 
-    const newBusinessField: Prisma.BusinessFieldCreateInput = {
+    const newBusinessField = {
       name: reqBusinessField.name,
       geometryType: reqBusinessField.geometry.type,
       geometry: reqBusinessField.geometry.coordinates,
@@ -64,27 +65,28 @@ export const createSeasonBusinessField = async (
           id: seasonId,
         },
       },
-      cropRotations:
-        (reqBusinessField.crop && {
-          create: {
-            crop: {
-              connect: {
-                id: reqBusinessField.crop.id,
-              },
-            },
-            startDate: reqBusinessField.crop.startDate,
-            endDate: reqBusinessField.crop.endDate,
-            createdBy: {
-              connect: {
-                id: businessUserId,
-              },
+      cropRotations: {
+        create: reqBusinessField.cropRotations.map((cropRotation) => ({
+          crop: {
+            connect: {
+              id: cropRotation.cropId,
             },
           },
-        }) ||
-        undefined,
+          startDate: cropRotation.startDate,
+          endDate: cropRotation.endDate,
+          createdBy: {
+            connect: {
+              id: businessUserId,
+            },
+          },
+        })),
+      },
     };
 
-    const createdBusinessField = await createBusinessField(newBusinessField);
+    const createdBusinessField = await createBusinessField({
+      data: newBusinessField,
+      ...businessFieldDefaultSelect,
+    });
     res.status(201).json(prepareBusinessFieldForResponse(createdBusinessField));
   } catch (err) {
     next(err);
@@ -130,7 +132,7 @@ export const updateSeason = async (
       throw new Error("User is not allowed to access this season");
     }
 
-    const season: Prisma.SeasonUpdateInput = {
+    const season = {
       name: reqSeason.name,
       startDate: reqSeason.startDate,
       endDate: reqSeason.endDate,
@@ -141,7 +143,12 @@ export const updateSeason = async (
       },
     };
 
-    const updatedSeason = await updateSeasonDB(seasonId, season);
+    const updatedSeason = await updateSeasonDB({
+      where: {
+        id: seasonId,
+      },
+      data: season,
+    });
 
     res.status(200).json(updatedSeason);
   } catch (error) {
@@ -163,7 +170,11 @@ export const deleteSeason = async (
       throw new Error("User is not allowed to access this season");
     }
 
-    await deleteSeasonDB(seasonId);
+    await deleteSeasonDB({
+      where: {
+        id: seasonId,
+      },
+    });
 
     res.status(200).json({ message: "Season deleted successfully" });
   } catch (error) {
