@@ -17,6 +17,8 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime?      @updatedAt
   businessUsers BusinessUser[]
+
+  @@map("users")
 }
 
 model BusinessUser {
@@ -29,8 +31,8 @@ model BusinessUser {
   user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdFields         Field[]         @relation("createdBy")
   updatedFields         Field[]         @relation("updatedBy")
-  createdBussinesFields BusinessField[] @relation("createdBy")
-  updatedBussinesFields BusinessField[] @relation("updatedBy")
+  createdBusinessFields BusinessField[] @relation("createdBy")
+  updatedBusinessFields BusinessField[] @relation("updatedBy")
   createdCropRotations  CropRotation[]  @relation("createdBy")
   updatedCropRotations  CropRotation[]  @relation("updatedBy")
   createdCrops          Crop[]          @relation("createdBy")
@@ -40,6 +42,8 @@ model BusinessUser {
   createdWorkspaces     Workspace[]     @relation("createdBy")
   updatedWorkspaces     Workspace[]     @relation("updatedBy")
   ownedWorkspaces       Workspace[]     @relation("owner")
+
+  @@map("business_users")
 }
 
 model Workspace {
@@ -54,6 +58,8 @@ model Workspace {
   updatedById String?
   updatedBy   BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
   seasons     Season[]      @relation("workspaceSeasons")
+
+  @@map("workspaces")
 }
 
 model Season {
@@ -69,12 +75,16 @@ model Season {
   createdBy      BusinessUser    @relation("createdBy", fields: [createdById], references: [id])
   updatedById    String?
   updatedBy      BusinessUser?   @relation("updatedBy", fields: [updatedById], references: [id])
-  businessFields BusinessField[] @relation("seasonBussinesFields")
+  businessFields BusinessField[] @relation("seasonBusinessFields")
+
+  @@map("seasons")
 }
 
 enum GEOMETRY_TYPE {
   Polygon
   MultyPolygon
+
+  @@map("geometry_types")
 }
 
 //TODO: Handle cascade delete 
@@ -88,6 +98,8 @@ model Field {
   createdBy      BusinessUser    @relation("createdBy", fields: [createdById], references: [id])
   updatedById    String?
   updatedBy      BusinessUser?   @relation("updatedBy", fields: [updatedById], references: [id])
+
+  @@map("fields")
 }
 
 model BusinessField {
@@ -105,15 +117,16 @@ model BusinessField {
   updatedById   String?
   updatedBy     BusinessUser?  @relation("updatedBy", fields: [updatedById], references: [id])
   seasonId      String
-  season        Season         @relation("seasonBussinesFields", fields: [seasonId], references: [id], onDelete: Cascade)
+  season        Season         @relation("seasonBusinessFields", fields: [seasonId], references: [id], onDelete: Cascade)
 
   @@unique([fieldId, seasonId])
+  @@map("business_fields")
 }
 
 model CropRotation {
   id              String        @id @default(uuid())
-  bussinesFieldId String
-  bussinesField   BusinessField @relation(fields: [bussinesFieldId], references: [id], onDelete: Cascade)
+  businessFieldId String
+  businessField   BusinessField @relation(fields: [businessFieldId], references: [id], onDelete: Cascade)
   cropId          String
   crop            Crop          @relation(fields: [cropId], references: [id])
   startDate       DateTime
@@ -124,6 +137,9 @@ model CropRotation {
   createdBy       BusinessUser  @relation("createdBy", fields: [createdById], references: [id])
   updatedById     String?
   updatedBy       BusinessUser? @relation("updatedBy", fields: [updatedById], references: [id])
+
+  @@unique([businessFieldId, startDate, endDate])
+  @@map("crop_rotations")
 }
 
 model Crop {
@@ -137,6 +153,8 @@ model Crop {
   createdBy     BusinessUser   @relation("createdBy", fields: [createdById], references: [id])
   updatedById   String?
   updatedBy     BusinessUser?  @relation("updatedBy", fields: [updatedById], references: [id])
+
+  @@map("crops")
 }
 
 model NDVI {
@@ -147,4 +165,6 @@ model NDVI {
   picture   String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+
+  @@map("ndvis")
 }
