@@ -19,7 +19,7 @@ import {
   UpdateWorkspaceRequestBodySchema,
   UpdateWorkspaceRequestParamsSchema,
 } from "../schemas/requests";
-import { ProtectedRequest } from "../middlewares/protect";
+import { ProtectedRequest } from "../middlewares/protect.middleware";
 import { Request } from "express";
 
 export interface SignUpRequest extends Request {

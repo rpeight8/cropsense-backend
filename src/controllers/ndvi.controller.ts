@@ -1,5 +1,5 @@
 import { TypeOf } from "zod";
-import { ProtectedRequest } from "../middlewares/protect";
+import { ProtectedRequest } from "../middlewares/protect.middleware";
 import { getNDVIParametersSchema } from "../middlewares/requestsValidators/ndvi";
 import { NextFunction, Response } from "express";
 import prisma from "../modules/db";
