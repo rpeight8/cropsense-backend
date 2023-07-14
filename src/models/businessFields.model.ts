@@ -1,5 +1,5 @@
 import prisma from "../modules/db";
-import { Prisma } from "@prisma/client";
+import { BusinessField, Prisma } from "@prisma/client";
 
 export const getBusinessFieldById = async (id: string) => {
   const businessField = await prisma.businessField.findUnique({
@@ -17,14 +17,6 @@ export const getBusinessFieldsBySeasonId = async (id: string) => {
       businessFields: {
         include: {
           cropRotations: {
-            // where: {
-            //   startDate: {
-            //     lte: new Date(),
-            //   },
-            //   endDate: {
-            //     gte: new Date(),
-            //   },
-            // },
             include: {
               crop: true,
             },
@@ -39,59 +31,31 @@ export const getBusinessFieldsBySeasonId = async (id: string) => {
   return businessFields;
 };
 
-export const createBusinessField = async (
-  businessField: Prisma.BusinessFieldCreateInput
+export const createBusinessField = async <
+  T extends Prisma.BusinessFieldCreateArgs
+>(
+  args: Prisma.SelectSubset<T, Prisma.BusinessFieldCreateArgs>
 ) => {
-  const newBusinessField = await prisma.businessField.create({
-    data: {
-      ...businessField,
-    },
-    include: {
-      cropRotations: {
-        include: {
-          crop: true,
-        },
-      },
-    },
-  });
+  const newBusinessField = await prisma.businessField.create(args);
 
   return newBusinessField;
 };
 
-export const updateBusinessField = async (
-  id: string,
-  businessUserId: string,
-  businessField: Prisma.BusinessFieldUpdateInput
+export const updateBusinessField = async <
+  T extends Prisma.BusinessFieldUpdateArgs
+>(
+  args: Prisma.SelectSubset<T, Prisma.BusinessFieldUpdateArgs>
 ) => {
-  const updatedBusinessField = await prisma.businessField.update({
-    where: {
-      id,
-    },
-    data: {
-      ...businessField,
-      updatedBy: {
-        connect: {
-          id: businessUserId,
-        },
-      },
-    },
-    include: {
-      cropRotations: {
-        include: {
-          crop: true,
-        },
-      },
-    },
-  });
+  const updatedBusinessField = await prisma.businessField.update<T>(args);
   return updatedBusinessField;
 };
 
-export const deleteBusinessField = async (id: string) => {
-  const deletedBusinessField = await prisma.businessField.delete({
-    where: {
-      id,
-    },
-  });
+export const deleteBusinessField = async <
+  T extends Prisma.BusinessFieldDeleteArgs
+>(
+  args: Prisma.SelectSubset<T, Prisma.BusinessFieldDeleteArgs>
+) => {
+  const deletedBusinessField = await prisma.businessField.delete(args);
   return deletedBusinessField;
 };
 

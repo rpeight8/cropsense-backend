@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
   BusinessFieldCoordinatesSchema,
+  CropRotationEndDateSchema,
+  CropRotationStartDateSchema,
   GeometryTypeEnum,
   SeasonEndDateSchema,
   SeasonStartDateSchema,
@@ -100,13 +102,13 @@ export const CreateSeasonBusinessFieldRequestBodySchema = z.object({
     type: GeometryTypeEnum,
     coordinates: BusinessFieldCoordinatesSchema,
   }),
-  crop: z
-    .object({
-      id: z.string(),
-      startDate: SeasonStartDateSchema,
-      endDate: SeasonEndDateSchema,
+  cropRotations: z.array(
+    z.object({
+      cropId: z.string(),
+      startDate: CropRotationStartDateSchema,
+      endDate: CropRotationEndDateSchema,
     })
-    .nullable(),
+  ),
 });
 export const CreateSeasonBusinessFieldRequestParamsSchema = z.object({
   id: z.string(),
@@ -122,11 +124,14 @@ export const UpdateBusinessFieldRequestBodySchema = z.object({
     type: GeometryTypeEnum,
     coordinates: BusinessFieldCoordinatesSchema,
   }),
-  crop: z
-    .object({
+  cropRotations: z.array(
+    z.object({
       id: z.string(),
+      cropId: z.string(),
+      startDate: CropRotationStartDateSchema,
+      endDate: CropRotationEndDateSchema,
     })
-    .nullable(),
+  ),
 });
 export const UpdateBusinessFieldRequestParamsSchema = z.object({
   id: z.string(),

@@ -45,7 +45,7 @@ export const createWorkspace = async (
     const { businessUserId } = req.user;
     const reqWorkspace = req.body;
 
-    const workspace: Prisma.WorkspaceCreateInput = {
+    const workspace = {
       name: reqWorkspace.name,
       owner: {
         connect: {
@@ -59,7 +59,9 @@ export const createWorkspace = async (
       },
     };
 
-    const createdWorkspace = await createWorkspaceDB(workspace);
+    const createdWorkspace = await createWorkspaceDB({
+      data: workspace,
+    });
     res.status(201).json(createdWorkspace);
   } catch (err) {
     next(err);
@@ -81,7 +83,7 @@ export const updateWorkspace = async (
       throw new Error("User is not allowed to access this workspace");
     }
 
-    const workspace: Prisma.WorkspaceUpdateInput = {
+    const workspace = {
       name: reqWorkspace.name,
       updatedBy: {
         connect: {
@@ -90,7 +92,12 @@ export const updateWorkspace = async (
       },
     };
 
-    const updatedWorkspace = await updateWorkspaceDB(workspaceId, workspace);
+    const updatedWorkspace = await updateWorkspaceDB({
+      where: {
+        id: workspaceId,
+      },
+      data: workspace,
+    });
     res.status(200).json(updatedWorkspace);
   } catch (err) {
     next(err);
@@ -111,7 +118,11 @@ export const deleteWorkspace = async (
       throw new Error("User is not allowed to access this workspace");
     }
 
-    await deleteWorkspaceDB(workspaceId);
+    await deleteWorkspaceDB({
+      where: {
+        id: workspaceId,
+      },
+    });
     res.status(204).end();
   } catch (err) {
     next(err);
@@ -133,7 +144,7 @@ export const createWorkspaceSeason = async (
       throw new Error("User is not allowed to access this workspace");
     }
 
-    const season: Prisma.SeasonCreateInput = {
+    const season = {
       name: reqSeason.name,
       workspace: {
         connect: {
@@ -149,7 +160,9 @@ export const createWorkspaceSeason = async (
       },
     };
 
-    const createdSeason = await createSeason(season);
+    const createdSeason = await createSeason({
+      data: season,
+    });
 
     res.status(201).json(createdSeason);
   } catch (err) {

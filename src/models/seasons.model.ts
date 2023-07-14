@@ -2,38 +2,26 @@ import prisma from "../modules/db";
 import { Prisma } from "@prisma/client";
 import { DateTime } from "luxon";
 
-export const createSeason = async (season: Prisma.SeasonCreateInput) => {
-  const newSeason = await prisma.season.create({
-    data: {
-      ...season,
-    },
-  });
+export const createSeason = async <T extends Prisma.SeasonCreateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.SeasonCreateArgs>
+) => {
+  const newSeason = await prisma.season.create(args);
 
   return newSeason;
 };
 
-export const updateSeason = async (
-  id: string,
-  season: Prisma.SeasonUpdateInput
+export const updateSeason = async <T extends Prisma.SeasonUpdateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.SeasonUpdateArgs>
 ) => {
-  const updatedSeason = await prisma.season.update({
-    where: {
-      id,
-    },
-    data: {
-      ...season,
-    },
-  });
+  const updatedSeason = await prisma.season.update(args);
 
   return updatedSeason;
 };
 
-export const deleteSeason = async (id: string) => {
-  const deletedSeason = await prisma.season.delete({
-    where: {
-      id,
-    },
-  });
+export const deleteSeason = async <T extends Prisma.SeasonDeleteArgs>(
+  args: Prisma.SelectSubset<T, Prisma.SeasonDeleteArgs>
+) => {
+  const deletedSeason = await prisma.season.delete(args);
 
   return deletedSeason;
 };

@@ -1,5 +1,6 @@
 import { NextFunction, Response } from "express";
 import {
+  businessFieldDefaultSelect,
   isUserAllowedToAccessBusinessField,
   prepareBusinessFieldForResponse,
 } from "./utils";
@@ -16,6 +17,15 @@ import {
 
 import { UpdateBusinessFieldResponse } from "../types/responses";
 import { deleteField, getFieldById } from "../models/fields.model";
+import prisma from "../modules/db";
+import {
+  createCropRotation,
+  createCropRotations,
+  deleteCropRotations,
+  getCropRotations,
+  updateCropRotation,
+} from "../models/cropRotations.model";
+import { Prisma } from "@prisma/client";
 
 export const updateBusinessField = async (
   req: UpdateBusinessFieldRequest,
@@ -25,20 +35,119 @@ export const updateBusinessField = async (
   try {
     const { id: fieldId } = req.params;
     const { businessUserId } = req.user;
-    const field = req.body;
+    const reqField = req.body;
 
     if (!isUserAllowedToAccessBusinessField(businessUserId, fieldId)) {
       res.status(403);
       throw new Error("User is not allowed to access this field");
     }
 
-    const updatedField = await updateBusinessFieldDB(fieldId, businessUserId, {
-      geometryType: field.geometry.type,
-      geometry: field.geometry.coordinates,
-      name: field.name,
+    const existingCropRotations = await getCropRotations({
+      where: {
+        businessFieldId: fieldId,
+      },
     });
 
-    res.status(200).json(prepareBusinessFieldForResponse(updatedField));
+    const cropRotationsToDelete = existingCropRotations.filter(
+      (existingCropRotation) => {
+        return !reqField.cropRotations.some((cropRotation) => {
+          return cropRotation.id === existingCropRotation.id;
+        });
+      }
+    );
+
+    const cropRotationsToUpdate = existingCropRotations.filter(
+      (existingCropRotation) => {
+        return reqField.cropRotations.some((cropRotation) => {
+          return cropRotation.id === existingCropRotation.id;
+        });
+      }
+    );
+
+    const cropRotationsToCreate = reqField.cropRotations.filter(
+      (cropRotation) => {
+        return !existingCropRotations.some((existingCropRotation) => {
+          return cropRotation.id === existingCropRotation.id;
+        });
+      }
+    );
+
+    const updatedBusinessField = await prisma.$transaction(async () => {
+      await Promise.all(
+        cropRotationsToCreate.map(async (cropRotation) => {
+          // TODO: double check is it possible to do it using batching craeteMany
+          return await createCropRotation({
+            data: {
+              crop: {
+                connect: {
+                  id: cropRotation.cropId,
+                },
+              },
+              businessField: {
+                connect: {
+                  id: fieldId,
+                },
+              },
+              createdBy: {
+                connect: {
+                  id: businessUserId,
+                },
+              },
+              startDate: cropRotation.startDate,
+              endDate: cropRotation.endDate,
+            },
+          });
+        })
+      );
+
+      await Promise.all(
+        cropRotationsToUpdate.map(async (cropRotation) => {
+          return await updateCropRotation(cropRotation.id, {
+            data: {
+              crop: {
+                connect: {
+                  id: cropRotation.cropId,
+                },
+              },
+              startDate: cropRotation.startDate,
+              endDate: cropRotation.endDate,
+            },
+          });
+        })
+      );
+
+      if (cropRotationsToDelete.length > 0) {
+        await deleteCropRotations({
+          where: {
+            id: {
+              in: cropRotationsToDelete.map((cropRotation) => {
+                return cropRotation.id;
+              }),
+            },
+          },
+        });
+      }
+
+      const updatedBusinessField = await updateBusinessFieldDB({
+        where: {
+          id: fieldId,
+        },
+        data: {
+          name: reqField.name,
+          geometryType: reqField.geometry.type,
+          geometry: reqField.geometry.coordinates,
+          updatedBy: {
+            connect: {
+              id: businessUserId,
+            },
+          },
+        },
+        ...businessFieldDefaultSelect,
+      });
+      return updatedBusinessField;
+    });
+
+    res.status(200).json(prepareBusinessFieldForResponse(updatedBusinessField));
   } catch (error) {
     next(error);
   }
@@ -61,7 +170,7 @@ export const deleteBusinessField = async (
     const siblings = await getBusinessFieldSiblings(businessFieldId);
 
     if (siblings.length > 0) {
-      await deleteBusinessFieldDB(businessFieldId);
+      await deleteBusinessFieldDB({ where: { id: businessFieldId } });
     } else {
       // Deletition of field is cascaded to businessField
       const bussinesFieldForDeletion = await getBusinessFieldById(

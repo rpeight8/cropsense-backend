@@ -1,40 +1,26 @@
 import prisma from "../modules/db";
 import { Prisma } from "@prisma/client";
 
-export const createWorkspace = async (
-  workspace: Prisma.WorkspaceCreateInput
+export const createWorkspace = async <T extends Prisma.WorkspaceCreateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.WorkspaceCreateArgs>
 ) => {
-  const newWorkspace = await prisma.workspace.create({
-    data: {
-      ...workspace,
-    },
-  });
+  const newWorkspace = await prisma.workspace.create(args);
 
   return newWorkspace;
 };
 
-export const updateWorkspace = async (
-  id: string,
-  workspace: Prisma.WorkspaceUpdateInput
+export const updateWorkspace = async <T extends Prisma.WorkspaceUpdateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.WorkspaceUpdateArgs>
 ) => {
-  const updatedWorkspace = await prisma.workspace.update({
-    where: {
-      id,
-    },
-    data: {
-      ...workspace,
-    },
-  });
+  const updatedWorkspace = await prisma.workspace.update(args);
 
   return updatedWorkspace;
 };
 
-export const deleteWorkspace = async (id: string) => {
-  const deletedWorkspace = await prisma.workspace.delete({
-    where: {
-      id,
-    },
-  });
+export const deleteWorkspace = async <T extends Prisma.WorkspaceDeleteArgs>(
+  args: Prisma.SelectSubset<T, Prisma.WorkspaceDeleteArgs>
+) => {
+  const deletedWorkspace = await prisma.workspace.delete(args);
 
   return deletedWorkspace;
 };
