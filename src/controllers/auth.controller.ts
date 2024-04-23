@@ -3,12 +3,21 @@ import prisma from "../modules/db";
 import { comparePassword, generateToken, verifyToken } from "../modules/auth";
 import { getUserByEmail } from "../models/users.model";
 import { registerNewUser } from "../services/signUpService";
-import { signInRequest, signInResponse, signUpRequest } from "../types/auth";
-import { getBusinessUser } from "../models/businessUsers.model";
+import {
+  getBusinessUser,
+  getBusinessUserById,
+} from "../models/businessUsers.model";
+import { SignInRequest, SignUpRequest } from "../types/requests";
+import {
+  SignInResponse,
+  SignOutResponse,
+  SignUpResponse,
+  VerifyResponse,
+} from "../types/responses";
 
 export const verify = async (
   req: Request,
-  res: Response,
+  res: VerifyResponse,
   next: NextFunction
 ) => {
   let token = req.cookies?.token;
@@ -18,15 +27,21 @@ export const verify = async (
   }
 
   try {
-    const decoded = verifyToken(token);
-    res.status(200).json(decoded);
+    const user = verifyToken(token);
+    const bussinesUser = await getBusinessUserById(user.businessUserId);
+    console.log(bussinesUser);
+    if (!bussinesUser) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    res.status(200).json(user);
   } catch (err) {
     res.status(401).json({ message: "Unauthorized" });
     next(err);
   }
 };
 
-export const signIn = async (req: signInRequest, res: signInResponse) => {
+export const signIn = async (req: SignInRequest, res: SignInResponse) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -74,7 +89,7 @@ export const signIn = async (req: signInRequest, res: signInResponse) => {
   res.end();
 };
 
-export const signUp = async (req: signUpRequest, res: Response) => {
+export const signUp = async (req: SignUpRequest, res: SignUpResponse) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -92,13 +107,14 @@ export const signUp = async (req: signUpRequest, res: Response) => {
     res.status(201).json({ message: "User created" });
     res.end();
   } catch (err) {
-    res.status(400).json({ message: "Email already exists" });
+    console.log(err);
+    res.status(400).json({ message: "An error occured while creating user" });
     res.end();
   }
 };
 
-export const signout = async (req: Request, res: Response) => {
+export const signOut = async (req: Request, res: SignOutResponse) => {
   res.clearCookie("token");
-  res.json({ message: "Logout successful" });
-  res.end();
+
+  res.status(200).json({ message: "Logout successful" });
 };

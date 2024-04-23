@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { z } from "zod";
-import { signInSchema, signUpSchema } from "../../schemas/auth";
+import {
+  SignInRequestSchema,
+  SignUpRequestSchema,
+} from "../../schemas/requests";
 
 export const validateSignUp = async (
   req: Request,
@@ -8,7 +10,7 @@ export const validateSignUp = async (
   next: NextFunction
 ) => {
   try {
-    await signUpSchema.parseAsync(req.body);
+    await SignUpRequestSchema.parseAsync(req);
     next();
   } catch (err) {
     res.status(400);
@@ -22,7 +24,7 @@ export const validateSignIn = async (
   next: NextFunction
 ) => {
   try {
-    await signInSchema.parseAsync(req.body);
+    await SignInRequestSchema.parseAsync(req);
     next();
   } catch (err) {
     res.status(400);

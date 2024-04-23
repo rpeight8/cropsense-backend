@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { protect } from "../middlewares/protect";
+import { protect } from "../middlewares/protect.middleware";
 import { getCrops } from "../controllers/crops.controller";
 
 const router = Router();

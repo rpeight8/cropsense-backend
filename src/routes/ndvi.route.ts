@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { validateGetNDVI } from "../middlewares/requestsValidators/ndvi";
-import { getNDVI } from "../controllers/ndvi.controller";
-import { protect } from "../middlewares/protect";
+// import { getNDVI } from "../controllers/ndvi.controller";
+import { protect } from "../middlewares/protect.middleware";
 
 const router = Router();
 
-router.get("/ndvi/:fieldId/:date?", protect, validateGetNDVI, getNDVI);
+// router.get("/ndvi/:fieldId/:date?", protect, validateGetNDVI, getNDVI);
 
 export default router;

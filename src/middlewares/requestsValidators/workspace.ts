@@ -1,13 +1,11 @@
 import e, { NextFunction, Request, Response } from "express";
 import {
-  CreateSeasonForWorkspaceParametersSchema,
-  CreateSeasonForWorkspaceBodySchema,
-  CreateWorkspaceBodySchema,
-  GetWorkspacesSeasonsParametersSchema,
-  UpdateWorkspaceBodySchema,
-  UpdateWorkspaceParametersSchema,
-  DeleteWorkspaceParametersSchema,
-} from "../../schemas/workspaces";
+  CreateWorkspaceRequestSchema,
+  CreateWorkspaceSeasonRequestSchema,
+  DeleteWorkspaceRequestSchema,
+  GetWorkspaceSeasonsRequestSchema,
+  UpdateWorkspaceRequestSchema,
+} from "../../schemas/requests";
 
 export const validateCreateWorkspace = async (
   req: Request,
@@ -15,7 +13,7 @@ export const validateCreateWorkspace = async (
   next: NextFunction
 ) => {
   try {
-    await CreateWorkspaceBodySchema.parseAsync(req.body);
+    await CreateWorkspaceRequestSchema.parseAsync(req);
     next();
   } catch (err) {
     next(err);
@@ -28,8 +26,7 @@ export const validateUpdateWorkspace = async (
   next: NextFunction
 ) => {
   try {
-    await UpdateWorkspaceBodySchema.parseAsync(req.body);
-    await UpdateWorkspaceParametersSchema.parseAsync(req.params);
+    await UpdateWorkspaceRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);
@@ -43,7 +40,7 @@ export const validateDeleteWorkspace = async (
   next: NextFunction
 ) => {
   try {
-    await DeleteWorkspaceParametersSchema.parseAsync(req.params);
+    await DeleteWorkspaceRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);
@@ -51,14 +48,13 @@ export const validateDeleteWorkspace = async (
   }
 };
 
-export const validateCreateSeasonForWorkspace = async (
+export const validateCreateWorkspaceSeason = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await CreateSeasonForWorkspaceParametersSchema.parseAsync(req.params);
-    await CreateSeasonForWorkspaceBodySchema.parseAsync(req.body);
+    await CreateWorkspaceSeasonRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);
@@ -66,13 +62,13 @@ export const validateCreateSeasonForWorkspace = async (
   }
 };
 
-export const validateWorkspacesSeasons = async (
+export const validateGetWorkspaceSeasons = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await GetWorkspacesSeasonsParametersSchema.parseAsync(req.params);
+    await GetWorkspaceSeasonsRequestSchema.parseAsync(req);
     next();
   } catch (error) {
     res.status(400);

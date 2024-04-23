@@ -1,91 +1,104 @@
 import { NextFunction, Response } from "express";
+import { Prisma } from "@prisma/client";
 import {
   updateSeason as updateSeasonDB,
   deleteSeason as deleteSeasonDB,
 } from "../models/seasons.model";
 
 import {
-  CreateFieldForSeasonRequest,
-  CreateFieldForSeasonResponse,
+  businessFieldDefaultSelect,
+  prepareBusinessFieldForResponse,
+} from "./utils";
+import {
+  CreateSeasonBusinessFieldRequest,
   DeleteSeasonRequest,
-  GetSeasonFieldsRequest,
-  GetSeasonFieldsResponse,
+  GetSeasonBusinessFieldsRequest,
   UpdateSeasonRequest,
+} from "../types/requests";
+import {
+  CreateSeasonBusinessFieldResponse,
+  GetSeasonBusinessFieldsResponse,
   UpdateSeasonResponse,
-} from "../types/seasons";
-import { createField, getFieldsBySeasonId } from "../models/fields.model";
-import { isUserAllowedToAccessSeason } from "./utils.controller";
+} from "../types/responses";
+import {
+  createBusinessField,
+  getBusinessFieldsBySeasonId,
+} from "../models/businessFields.model";
 
-export const prepareFieldForResponse = (
-  field: Awaited<ReturnType<typeof createField>>
-) => {
-  return {
-    id: field.id,
-    name: field.name,
-    seasonId: field.seasonId,
-    geometry: {
-      type: field.geometryType,
-      coordinates: field.coordinates,
-    },
-    crop:
-      (field.crop && {
-        id: field.crop.id,
-        name: field.crop.name,
-        color: field.crop.color,
-      }) ||
-      null,
-  };
-};
-
-export const createFieldForSeason = async (
-  req: CreateFieldForSeasonRequest,
-  res: CreateFieldForSeasonResponse,
+export const createSeasonBusinessField = async (
+  req: CreateSeasonBusinessFieldRequest,
+  res: CreateSeasonBusinessFieldResponse,
   next: NextFunction
 ) => {
   try {
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
-    const field = req.body;
+    const reqBusinessField = req.body;
 
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
+    const newBusinessField = {
+      name: reqBusinessField.name,
+      geometryType: reqBusinessField.geometry.type,
+      geometry: reqBusinessField.geometry.coordinates,
+      createdBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+      field: {
+        create: {
+          name: reqBusinessField.name,
+          createdBy: {
+            connect: {
+              id: businessUserId,
+            },
+          },
+        },
+      },
+      season: {
+        connect: {
+          id: seasonId,
+        },
+      },
+      cropRotations: {
+        create: reqBusinessField.cropRotations.map((cropRotation) => ({
+          crop: {
+            connect: {
+              id: cropRotation.cropId,
+            },
+          },
+          startDate: cropRotation.startDate,
+          endDate: cropRotation.endDate,
+          createdBy: {
+            connect: {
+              id: businessUserId,
+            },
+          },
+        })),
+      },
+    };
 
-    const createdField = await createField({
-      seasonId,
-      createdById: businessUserId,
-      geometryType: field.geometry.type,
-      coordinates: field.geometry.coordinates,
-      name: field.name,
-      cropId: field.crop ? field.crop.id : null,
+    const createdBusinessField = await createBusinessField({
+      data: newBusinessField,
+      ...businessFieldDefaultSelect,
     });
-
-    const preparedField = prepareFieldForResponse(createdField);
-
-    res.status(201).json(preparedField);
+    res.status(201).json(prepareBusinessFieldForResponse(createdBusinessField));
   } catch (err) {
     next(err);
   }
 };
 
-export const getSeasonFields = async (
-  req: GetSeasonFieldsRequest,
-  res: GetSeasonFieldsResponse,
+export const getSeasonBusinessFields = async (
+  req: GetSeasonBusinessFieldsRequest,
+  res: GetSeasonBusinessFieldsResponse,
   next: NextFunction
 ) => {
   try {
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
 
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
+    const fields = await getBusinessFieldsBySeasonId(seasonId);
 
-    const fields = await getFieldsBySeasonId(seasonId);
-
-    const preparedFields = fields.map(prepareFieldForResponse);
+    const preparedFields = fields.map(prepareBusinessFieldForResponse);
 
     res.status(200).json(preparedFields);
   } catch (error) {
@@ -101,18 +114,25 @@ export const updateSeason = async (
   try {
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
-    const season = req.body;
+    const reqSeason = req.body;
 
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
+    const season = {
+      name: reqSeason.name,
+      startDate: reqSeason.startDate,
+      endDate: reqSeason.endDate,
+      updatedBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+    };
 
-    const updatedSeason = await updateSeasonDB(
-      seasonId,
-      businessUserId,
-      season
-    );
+    const updatedSeason = await updateSeasonDB({
+      where: {
+        id: seasonId,
+      },
+      data: season,
+    });
 
     res.status(200).json(updatedSeason);
   } catch (error) {
@@ -129,12 +149,11 @@ export const deleteSeason = async (
     const { businessUserId } = req.user;
     const { id: seasonId } = req.params;
 
-    if (!isUserAllowedToAccessSeason(businessUserId, seasonId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this season");
-    }
-
-    await deleteSeasonDB(seasonId);
+    await deleteSeasonDB({
+      where: {
+        id: seasonId,
+      },
+    });
 
     res.status(200).json({ message: "Season deleted successfully" });
   } catch (error) {

@@ -1,70 +1,27 @@
 import prisma from "../modules/db";
+import { Prisma } from "@prisma/client";
 import { DateTime } from "luxon";
 
-// TODO: Pass startDate and endDate as parameters
-export const createSeason = async (
-  workspaceId: string,
-  businessUserId: string,
-  season: Pick<
-    Parameters<typeof prisma.season.create>[0]["data"],
-    "name" | "startDate" | "endDate"
-  >
+export const createSeason = async <T extends Prisma.SeasonCreateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.SeasonCreateArgs>
 ) => {
-  const newSeason = await prisma.season.create({
-    data: {
-      name: season.name,
-      startDate: season.startDate,
-      endDate: season.endDate,
-      workspace: {
-        connect: {
-          id: workspaceId,
-        },
-      },
-      createdBy: {
-        connect: {
-          id: businessUserId,
-        },
-      },
-    },
-  });
+  const newSeason = await prisma.season.create(args);
 
   return newSeason;
 };
 
-export const updateSeason = async (
-  id: string,
-  businessUserId: string,
-  season: Pick<
-    Parameters<typeof prisma.season.update>[0]["data"],
-    "name" | "startDate" | "endDate"
-  >
+export const updateSeason = async <T extends Prisma.SeasonUpdateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.SeasonUpdateArgs>
 ) => {
-  const updatedSeason = await prisma.season.update({
-    where: {
-      id,
-    },
-    data: {
-      name: season.name,
-      startDate: season.startDate,
-      endDate: season.endDate,
-      updatedBy: {
-        connect: {
-          id: businessUserId,
-        },
-      },
-      updatedAt: new Date(),
-    },
-  });
+  const updatedSeason = await prisma.season.update(args);
 
   return updatedSeason;
 };
 
-export const deleteSeason = async (id: string) => {
-  const deletedSeason = await prisma.season.delete({
-    where: {
-      id,
-    },
-  });
+export const deleteSeason = async <T extends Prisma.SeasonDeleteArgs>(
+  args: Prisma.SelectSubset<T, Prisma.SeasonDeleteArgs>
+) => {
+  const deletedSeason = await prisma.season.delete(args);
 
   return deletedSeason;
 };
@@ -79,10 +36,10 @@ export const getSeasonById = async (seasonId: string) => {
   return season;
 };
 
-export const getSeasonsByWorkspaceId = async (workspaceId: string) => {
+export const getSeasonsByWorkspaceId = async (id: string) => {
   const seasons = await prisma.season.findMany({
     where: {
-      workspaceId,
+      workspaceId: id,
     },
   });
 

@@ -1,129 +1,57 @@
 import prisma from "../modules/db";
+import { Prisma } from "@prisma/client";
 
-export const createWorkspace = async (bussinesUserId: string, name: string) => {
-  const newWorkspace = await prisma.workspace.create({
-    data: {
-      name,
-      createdBy: {
-        connect: {
-          id: bussinesUserId,
-        },
-      },
-      owner: {
-        connect: {
-          id: bussinesUserId,
-        },
-      },
-    },
-  });
+export const createWorkspace = async <T extends Prisma.WorkspaceCreateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.WorkspaceCreateArgs>
+) => {
+  const newWorkspace = await prisma.workspace.create(args);
 
   return newWorkspace;
 };
 
-export const updateWorkspace = async (
-  id: string,
-  businessUserId: string,
-  workspace: {
-    name: string;
-  }
+export const updateWorkspace = async <T extends Prisma.WorkspaceUpdateArgs>(
+  args: Prisma.SelectSubset<T, Prisma.WorkspaceUpdateArgs>
 ) => {
-  const updatedWorkspace = await prisma.workspace.update({
-    where: {
-      id,
-    },
-    data: {
-      name: workspace.name,
-      updatedBy: {
-        connect: {
-          id: businessUserId,
-        },
-      },
-      updatedAt: new Date(),
-    },
-  });
+  const updatedWorkspace = await prisma.workspace.update(args);
 
   return updatedWorkspace;
 };
 
-export const deleteWorkspace = async (id: string) => {
-  const deletedWorkspace = await prisma.workspace.delete({
+export const deleteWorkspace = async <T extends Prisma.WorkspaceDeleteArgs>(
+  args: Prisma.SelectSubset<T, Prisma.WorkspaceDeleteArgs>
+) => {
+  const deletedWorkspace = await prisma.workspace.delete(args);
+
+  return deletedWorkspace;
+};
+
+export const getWorkspaceById = async (id: string) => {
+  const workspace = await prisma.workspace.findFirst({
     where: {
       id,
     },
   });
 
-  return deletedWorkspace;
-};
-
-export const getWorkspaceById = async (workspaceId: string) => {
-  const workspace = await prisma.workspace.findFirst({
-    where: {
-      id: workspaceId,
-    },
-  });
-
   return workspace;
 };
 
-export const getWorkspacesByOwnerId = async (businessUserId: string) => {
+export const getWorkspacesByOwnerId = async (id: string) => {
   const workspace = await prisma.workspace.findMany({
     where: {
-      ownerId: businessUserId,
+      ownerId: id,
     },
   });
 
   return workspace;
 };
 
-export const getWorkspacesWithSeasonsByOwnerId = async (
-  businessUserId: string
-) => {
+export const getWorkspacesWithSeasonsByOwnerId = async (id: string) => {
   const workspaces = await prisma.workspace.findMany({
     where: {
-      ownerId: businessUserId,
+      ownerId: id,
     },
     include: {
       seasons: true,
-    },
-  });
-
-  return workspaces;
-};
-
-export const getWorkspacesWithSeasonsWithFieldsByOwnerId = async (
-  businessUserId: string
-) => {
-  const workspaces = await prisma.workspace.findMany({
-    where: {
-      ownerId: businessUserId,
-    },
-    select: {
-      id: true,
-      name: true,
-      seasons: {
-        select: {
-          id: true,
-          name: true,
-          startDate: true,
-          endDate: true,
-          fields: {
-            select: {
-              id: true,
-              name: true,
-              geometryType: true,
-              coordinates: true,
-              seasonId: true,
-              crop: {
-                select: {
-                  id: true,
-                  name: true,
-                  color: true,
-                },
-              },
-            },
-          },
-        },
-      },
     },
   });
 

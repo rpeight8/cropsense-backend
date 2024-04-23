@@ -2,97 +2,66 @@ import { NextFunction, Request, Response } from "express";
 import {
   getWorkspacesByOwnerId,
   getWorkspacesWithSeasonsByOwnerId,
-  getWorkspacesWithSeasonsWithFieldsByOwnerId,
+  // getWorkspacesWithSeasonsWithFieldsByOwnerId,
   createWorkspace as createWorkspaceDB,
   updateWorkspace as updateWorkspaceDB,
   getWorkspaceById,
   deleteWorkspace as deleteWorkspaceDB,
 } from "../models/workspaces.model";
-import {
-  CreateSeasonForWorkspaceRequest,
-  CreateWorkspaceRequest,
-  DeleteWorkspaceRequest,
-  GetWorkspacesSeasonsRequest,
-  UpdateWorkspaceRequest,
-  UpdateWorkspaceResponse,
-  WorkspaceResponse,
-  WorkspacesExtendSeasonsFieldsResponse,
-  WorkspacesExtendSeasonsResponse,
-  WorkspacesResponse,
-} from "../types/workspaces";
 import { createSeason, getSeasonsByWorkspaceId } from "../models/seasons.model";
-import { SeasonResponse, SeasonsResponse } from "../types/seasons";
-import { isUserAllowedToAccessWorkspace } from "./utils.controller";
+import {
+  CreateWorkspaceRequest,
+  CreateWorkspaceSeasonRequest,
+  DeleteWorkspaceRequest,
+  GetWorkspaceSeasonsRequest,
+  UpdateWorkspaceRequest,
+} from "../types/requests";
+import {
+  CreateWorkspaceResponse,
+  CreateWorkspaceSeasonResponse,
+  GetWorkspaceSeasonsResponse,
+  GetWorkspacesResponse,
+  UpdateWorkspaceResponse,
+} from "../types/responses";
 
-export const getWorkspaces = async (req: Request, res: WorkspacesResponse) => {
+import { Prisma, Workspace } from "@prisma/client";
+
+export const getWorkspaces = async (
+  req: Request,
+  res: GetWorkspacesResponse
+) => {
   const { businessUserId } = req.user;
   const workspaces = await getWorkspacesByOwnerId(businessUserId);
   res.status(200).json(workspaces);
 };
 
-export const getWorkspacesWithSeasons = async (
-  req: Request,
-  res: WorkspacesExtendSeasonsResponse,
-  next: NextFunction
-) => {
-  try {
-    const { businessUserId } = req.user;
-    const workspaces = await getWorkspacesWithSeasonsByOwnerId(businessUserId);
-    res.status(200).json(workspaces);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getWorkspacesWithSeasonsWithFields = async (
-  req: Request,
-  res: WorkspacesExtendSeasonsFieldsResponse,
-  next: NextFunction
-) => {
-  try {
-    const { businessUserId } = req.user;
-
-    const workspaces = await getWorkspacesWithSeasonsWithFieldsByOwnerId(
-      businessUserId
-    );
-
-    for (const workspace of workspaces) {
-      for (const season of workspace.seasons) {
-        // @ts-ignore WHAT A FILTHY HACK
-        season.fields = season.fields.map((field) => {
-          const geometry = {
-            type: field.geometryType,
-            coordinates: field.coordinates,
-          };
-          const newField = {
-            id: field.id,
-            name: field.name,
-            geometry,
-            crop: field.crop,
-            seasonId: field.seasonId,
-          };
-          return newField;
-        });
-      }
-    }
-
-    // @ts-ignore WHAT A FILTHY HACK
-    res.status(200).json(workspaces);
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const createWorkspace = async (
   req: CreateWorkspaceRequest,
-  res: WorkspaceResponse,
+  res: CreateWorkspaceResponse,
   next: NextFunction
 ) => {
   try {
     const { businessUserId } = req.user;
-    const { name } = req.body;
-    const workspace = await createWorkspaceDB(businessUserId, name);
-    res.status(201).json(workspace);
+    const reqWorkspace = req.body;
+
+    const workspace = {
+      name: reqWorkspace.name,
+      owner: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+      createdBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+    };
+
+    const createdWorkspace = await createWorkspaceDB({
+      data: workspace,
+    });
+    res.status(201).json(createdWorkspace);
   } catch (err) {
     next(err);
   }
@@ -106,17 +75,23 @@ export const updateWorkspace = async (
   try {
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
+    const reqWorkspace = req.body;
 
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
+    const workspace = {
+      name: reqWorkspace.name,
+      updatedBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+    };
 
-    const updatedWorkspace = await updateWorkspaceDB(
-      workspaceId,
-      businessUserId,
-      req.body
-    );
+    const updatedWorkspace = await updateWorkspaceDB({
+      where: {
+        id: workspaceId,
+      },
+      data: workspace,
+    });
     res.status(200).json(updatedWorkspace);
   } catch (err) {
     next(err);
@@ -132,38 +107,46 @@ export const deleteWorkspace = async (
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
 
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
-
-    await deleteWorkspaceDB(workspaceId);
+    await deleteWorkspaceDB({
+      where: {
+        id: workspaceId,
+      },
+    });
     res.status(204).end();
   } catch (err) {
     next(err);
   }
 };
 
-export const createSeasonForWorkspace = async (
-  req: CreateSeasonForWorkspaceRequest,
-  res: SeasonResponse,
+export const createWorkspaceSeason = async (
+  req: CreateWorkspaceSeasonRequest,
+  res: CreateWorkspaceSeasonResponse,
   next: NextFunction
 ) => {
   try {
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
-    const season = req.body;
+    const reqSeason = req.body;
 
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
+    const season = {
+      name: reqSeason.name,
+      workspace: {
+        connect: {
+          id: workspaceId,
+        },
+      },
+      startDate: reqSeason.startDate,
+      endDate: reqSeason.endDate,
+      createdBy: {
+        connect: {
+          id: businessUserId,
+        },
+      },
+    };
 
-    const createdSeason = await createSeason(
-      workspaceId,
-      businessUserId,
-      season
-    );
+    const createdSeason = await createSeason({
+      data: season,
+    });
 
     res.status(201).json(createdSeason);
   } catch (err) {
@@ -171,19 +154,14 @@ export const createSeasonForWorkspace = async (
   }
 };
 
-export const getWorkspacesSeasons = async (
-  req: GetWorkspacesSeasonsRequest,
-  res: SeasonsResponse,
+export const getWorkspaceSeasons = async (
+  req: GetWorkspaceSeasonsRequest,
+  res: GetWorkspaceSeasonsResponse,
   next: NextFunction
 ) => {
   try {
     const { businessUserId } = req.user;
     const { id: workspaceId } = req.params;
-
-    if (!isUserAllowedToAccessWorkspace(businessUserId, workspaceId)) {
-      res.status(403);
-      throw new Error("User is not allowed to access this workspace");
-    }
 
     const seasons = await getSeasonsByWorkspaceId(workspaceId);
 

@@ -1,35 +1,51 @@
 import { Router } from "express";
+import { protect } from "../middlewares/protect.middleware";
 import {
-  validateCreateFieldForSeason,
+  validateCreateSeasonBusinessField,
   validateDeleteSeason,
-  validateGetSeasonFields,
+  validateGetSeasonBusinessFields,
   validateUpdateSeason,
 } from "../middlewares/requestsValidators/seasons";
 import {
-  createFieldForSeason,
+  createSeasonBusinessField,
   deleteSeason,
-  getSeasonFields,
+  getSeasonBusinessFields,
   updateSeason,
 } from "../controllers/seasons.controller";
-import { protect } from "../middlewares/protect";
+
+import { validateSeasonAccess } from "../middlewares/entityAccess.middleware";
 
 const router = Router();
 
 router.post(
   "/seasons/:id/fields",
   protect,
-  validateCreateFieldForSeason,
-  createFieldForSeason
+  validateCreateSeasonBusinessField,
+  validateSeasonAccess,
+  createSeasonBusinessField
 );
 
 router.get(
   "/seasons/:id/fields",
   protect,
-  validateGetSeasonFields,
-  getSeasonFields
+  validateGetSeasonBusinessFields,
+  validateSeasonAccess,
+  getSeasonBusinessFields
 );
 
-router.put("/seasons/:id", protect, validateUpdateSeason, updateSeason);
-router.delete("/seasons/:id", protect, validateDeleteSeason, deleteSeason);
+router.put(
+  "/seasons/:id",
+  protect,
+  validateUpdateSeason,
+  validateSeasonAccess,
+  updateSeason
+);
+router.delete(
+  "/seasons/:id",
+  protect,
+  validateDeleteSeason,
+  validateSeasonAccess,
+  deleteSeason
+);
 
 export default router;

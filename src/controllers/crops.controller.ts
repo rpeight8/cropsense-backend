@@ -1,11 +1,11 @@
 import { NextFunction } from "express";
-import { ProtectedRequest } from "../middlewares/protect";
-import { CropsResponse } from "../types/crops";
+import { ProtectedRequest } from "../middlewares/protect.middleware";
 import { getCrops as getCropsDB } from "../models/crops.model";
+import { GetCropsResponse } from "../types/responses";
 
 export const getCrops = async (
   req: ProtectedRequest,
-  res: CropsResponse,
+  res: GetCropsResponse,
   next: NextFunction
 ) => {
   try {
